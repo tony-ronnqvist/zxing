@@ -266,6 +266,64 @@ public final class Code39Reader extends OneDReader {
     throw NotFoundException.getNotFoundInstance();
   }
 
+  private static char checkPlus(char next) throws FormatException {
+    // +A to +Z map to a to z
+    if (next >= 'A' && next <= 'Z') {
+      return (char) (next + 32);
+    } else {
+      throw FormatException.getFormatInstance();
+    }
+
+  }
+
+  private static char checkDollarSign(char next) throws FormatException {
+    // $A to $Z map to control codes SH to SB
+    if (next >= 'A' && next <= 'Z') {
+      return (char) (next - 64);
+    } else {
+      throw FormatException.getFormatInstance();
+    }
+
+  }
+
+  private static char checkModulusSign(char next) throws FormatException {
+    // %A to %E map to control codes ESC to US
+    if (next >= 'A' && next <= 'E') {
+      return (char) (next - 38);
+    } else if (next >= 'F' && next <= 'J') {
+      return (char) (next - 11);
+    } else if (next >= 'K' && next <= 'O') {
+      return(char) (next + 16);
+    } else if (next >= 'P' && next <= 'T') {
+      return(char) (next + 43);
+    } else if (next == 'U') {
+      return (char) 0;
+    } else if (next == 'V') {
+      return '@';
+    } else if (next == 'W') {
+      return '`';
+    } else if (next == 'X' || next == 'Y' || next == 'Z') {
+      return(char) 127;
+    } else {
+      throw FormatException.getFormatInstance();
+    }
+
+  }
+  private static char checkBackslashSign(char next) throws FormatException {
+
+    // /A to /O map to ! to , and /Z maps to :
+    if (next >= 'A' && next <= 'O') {
+      return (char) (next - 32);
+    } else if (next == 'Z') {
+      return ':';
+    } else {
+      throw FormatException.getFormatInstance();
+    }
+
+  }
+
+
+
   private static String decodeExtended(CharSequence encoded) throws FormatException {
     int length = encoded.length();
     StringBuilder decoded = new StringBuilder(length);
@@ -276,52 +334,16 @@ public final class Code39Reader extends OneDReader {
         char decodedChar = '\0';
         switch (c) {
           case '+':
-            // +A to +Z map to a to z
-            if (next >= 'A' && next <= 'Z') {
-              decodedChar = (char) (next + 32);
-            } else {
-              throw FormatException.getFormatInstance();
-            }
+            decodedChar = checkPlus(next);
             break;
           case '$':
-            // $A to $Z map to control codes SH to SB
-            if (next >= 'A' && next <= 'Z') {
-              decodedChar = (char) (next - 64);
-            } else {
-              throw FormatException.getFormatInstance();
-            }
+            decodedChar = checkDollarSign(next);
             break;
           case '%':
-            // %A to %E map to control codes ESC to US
-            if (next >= 'A' && next <= 'E') {
-              decodedChar = (char) (next - 38);
-            } else if (next >= 'F' && next <= 'J') {
-              decodedChar = (char) (next - 11);
-            } else if (next >= 'K' && next <= 'O') {
-              decodedChar = (char) (next + 16);
-            } else if (next >= 'P' && next <= 'T') {
-              decodedChar = (char) (next + 43);
-            } else if (next == 'U') {
-              decodedChar = (char) 0;
-            } else if (next == 'V') {
-              decodedChar = '@';
-            } else if (next == 'W') {
-              decodedChar = '`';
-            } else if (next == 'X' || next == 'Y' || next == 'Z') {
-              decodedChar = (char) 127;
-            } else {
-              throw FormatException.getFormatInstance();
-            }
+            decodedChar = checkModulusSign(next);
             break;
           case '/':
-            // /A to /O map to ! to , and /Z maps to :
-            if (next >= 'A' && next <= 'O') {
-              decodedChar = (char) (next - 32);
-            } else if (next == 'Z') {
-              decodedChar = ':';
-            } else {
-              throw FormatException.getFormatInstance();
-            }
+            decodedChar = checkBackslashSign(next);
             break;
         }
         decoded.append(decodedChar);
