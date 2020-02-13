@@ -16,6 +16,7 @@
 
 package com.google.zxing.client.result;
 
+import com.google.zxing.CoverageTool2000;
 import com.google.zxing.Result;
 
 import java.io.ByteArrayOutputStream;
@@ -84,8 +85,8 @@ public final class VCardResultParser extends ResultParser {
     }
     return new AddressBookParsedResult(toPrimaryValues(names),
                                        nicknames,
-                                       null, 
-                                       toPrimaryValues(phoneNumbers), 
+                                       null,
+                                       toPrimaryValues(phoneNumbers),
                                        toTypes(phoneNumbers),
                                        toPrimaryValues(emails),
                                        toTypes(emails),
@@ -110,15 +111,21 @@ public final class VCardResultParser extends ResultParser {
 
     while (i < max) {
 
-      // At start or after newline, match prefix, followed by optional metadata 
+      // At start or after newline, match prefix, followed by optional metadata
       // (led by ;) ultimately ending in colon
       Matcher matcher = Pattern.compile("(?:^|\n)" + prefix + "(?:;([^:]*))?:",
-                                        Pattern.CASE_INSENSITIVE).matcher(rawText);
+        Pattern.CASE_INSENSITIVE).matcher(rawText);
       if (i > 0) {
+        CoverageTool2000.setCoverageMatrix(8, 1);
         i--; // Find from i-1 not i since looking at the preceding character
+      }else{
+        CoverageTool2000.setCoverageMatrix(8, 2);
       }
       if (!matcher.find(i)) {
+        CoverageTool2000.setCoverageMatrix(8, 3);
         break;
+      }else{
+        CoverageTool2000.setCoverageMatrix(8, 4);
       }
       i = matcher.end(0); // group 0 = whole pattern; end(0) is past final colon
 
@@ -128,65 +135,99 @@ public final class VCardResultParser extends ResultParser {
       String quotedPrintableCharset = null;
       String valueType = null;
       if (metadataString != null) {
+        CoverageTool2000.setCoverageMatrix(8, 5);
         for (String metadatum : SEMICOLON.split(metadataString)) {
           if (metadata == null) {
+            CoverageTool2000.setCoverageMatrix(8, 6);
             metadata = new ArrayList<>(1);
+          }else{
+            CoverageTool2000.setCoverageMatrix(8, 7);
           }
           metadata.add(metadatum);
           String[] metadatumTokens = EQUALS.split(metadatum, 2);
           if (metadatumTokens.length > 1) {
+            CoverageTool2000.setCoverageMatrix(8, 8);
             String key = metadatumTokens[0];
             String value = metadatumTokens[1];
             if ("ENCODING".equalsIgnoreCase(key) && "QUOTED-PRINTABLE".equalsIgnoreCase(value)) {
+              CoverageTool2000.setCoverageMatrix(8, 9);
               quotedPrintable = true;
             } else if ("CHARSET".equalsIgnoreCase(key)) {
+              CoverageTool2000.setCoverageMatrix(8, 10);
               quotedPrintableCharset = value;
             } else if ("VALUE".equalsIgnoreCase(key)) {
+              CoverageTool2000.setCoverageMatrix(8, 11);
               valueType = value;
             }
+          }else{
+            CoverageTool2000.setCoverageMatrix(8, 12);
           }
         }
+      }else{
+        CoverageTool2000.setCoverageMatrix(8, 13);
       }
 
       int matchStart = i; // Found the start of a match here
 
       while ((i = rawText.indexOf('\n', i)) >= 0) { // Really, end in \r\n
         if (i < rawText.length() - 1 &&           // But if followed by tab or space,
-            (rawText.charAt(i + 1) == ' ' ||        // this is only a continuation
-             rawText.charAt(i + 1) == '\t')) {
+          (rawText.charAt(i + 1) == ' ' ||        // this is only a continuation
+            rawText.charAt(i + 1) == '\t')) {
+          CoverageTool2000.setCoverageMatrix(8, 14);
           i += 2; // Skip \n and continutation whitespace
         } else if (quotedPrintable &&             // If preceded by = in quoted printable
-                   ((i >= 1 && rawText.charAt(i - 1) == '=') || // this is a continuation
-                    (i >= 2 && rawText.charAt(i - 2) == '='))) {
+          ((i >= 1 && rawText.charAt(i - 1) == '=') || // this is a continuation
+            (i >= 2 && rawText.charAt(i - 2) == '='))) {
+          CoverageTool2000.setCoverageMatrix(8, 15);
           i++; // Skip \n
         } else {
+          CoverageTool2000.setCoverageMatrix(8, 16);
           break;
         }
       }
 
       if (i < 0) {
+        CoverageTool2000.setCoverageMatrix(8, 17);
         // No terminating end character? uh, done. Set i such that loop terminates and break
         i = max;
       } else if (i > matchStart) {
+        CoverageTool2000.setCoverageMatrix(8, 18);
         // found a match
         if (matches == null) {
+          CoverageTool2000.setCoverageMatrix(8, 19);
           matches = new ArrayList<>(1); // lazy init
+        }else{
+          CoverageTool2000.setCoverageMatrix(8, 20);
         }
         if (i >= 1 && rawText.charAt(i - 1) == '\r') {
+          CoverageTool2000.setCoverageMatrix(8, 21);
           i--; // Back up over \r, which really should be there
+        }else{
+          CoverageTool2000.setCoverageMatrix(8, 22);
         }
         String element = rawText.substring(matchStart, i);
         if (trim) {
+          CoverageTool2000.setCoverageMatrix(8, 23);
           element = element.trim();
+        }else{
+          CoverageTool2000.setCoverageMatrix(8, 24);
         }
         if (quotedPrintable) {
+          CoverageTool2000.setCoverageMatrix(8, 25);
           element = decodeQuotedPrintable(element, quotedPrintableCharset);
           if (parseFieldDivider) {
+            CoverageTool2000.setCoverageMatrix(8, 26);
             element = UNESCAPED_SEMICOLONS.matcher(element).replaceAll("\n").trim();
+          }else{
+            CoverageTool2000.setCoverageMatrix(8, 27);
           }
         } else {
+          CoverageTool2000.setCoverageMatrix(8, 28);
           if (parseFieldDivider) {
+            CoverageTool2000.setCoverageMatrix(8, 29);
             element = UNESCAPED_SEMICOLONS.matcher(element).replaceAll("\n").trim();
+          }else{
+            CoverageTool2000.setCoverageMatrix(8, 30);
           }
           element = CR_LF_SPACE_TAB.matcher(element).replaceAll("");
           element = NEWLINE_ESCAPE.matcher(element).replaceAll("\n");
@@ -194,28 +235,39 @@ public final class VCardResultParser extends ResultParser {
         }
         // Only handle VALUE=uri specially
         if ("uri".equals(valueType)) {
+          CoverageTool2000.setCoverageMatrix(8, 31);
           // Don't actually support dereferencing URIs, but use scheme-specific part not URI
           // as value, to support tel: and mailto:
           try {
+            CoverageTool2000.setCoverageMatrix(8, 32);
             element = URI.create(element).getSchemeSpecificPart();
           } catch (IllegalArgumentException iae) {
+            CoverageTool2000.setCoverageMatrix(8, 33);
             // ignore
           }
+
+        }else{
+          CoverageTool2000.setCoverageMatrix(8, 34);
         }
         if (metadata == null) {
+          CoverageTool2000.setCoverageMatrix(8, 35);
           List<String> match = new ArrayList<>(1);
           match.add(element);
           matches.add(match);
         } else {
+          CoverageTool2000.setCoverageMatrix(8, 36);
           metadata.add(0, element);
           matches.add(metadata);
         }
         i++;
       } else {
+        CoverageTool2000.setCoverageMatrix(8, 0);
         i++;
       }
-
     }
+
+    List<List<String>> matches1 = null;
+    List<String> match1 = new ArrayList<>(1);
 
     return matches;
   }
@@ -280,11 +332,11 @@ public final class VCardResultParser extends ResultParser {
     List<List<String>> values = matchVCardPrefixedField(prefix, rawText, trim, parseFieldDivider);
     return values == null || values.isEmpty() ? null : values.get(0);
   }
-  
+
   private static String toPrimaryValue(List<String> list) {
     return list == null || list.isEmpty() ? null : list.get(0);
   }
-  
+
   private static String[] toPrimaryValues(Collection<List<String>> lists) {
     if (lists == null || lists.isEmpty()) {
       return null;
@@ -298,7 +350,7 @@ public final class VCardResultParser extends ResultParser {
     }
     return result.toArray(EMPTY_STR_ARRAY);
   }
-  
+
   private static String[] toTypes(Collection<List<String>> lists) {
     if (lists == null || lists.isEmpty()) {
       return null;
