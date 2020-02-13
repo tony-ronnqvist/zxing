@@ -41,6 +41,21 @@ public final class CodaBarWriter extends OneDimensionalCodeWriter {
   @Override
   public boolean[] encode(String contents) {
 
+
+    contents = calculateContent(contents);
+
+    int resultLength = decodeStartEnd(contents);
+
+    // A blank is placed between each character.
+    resultLength += contents.length() - 1;
+
+    boolean[] result = forEachContent(resultLength, contents);
+
+    return result;
+  }
+
+  public String calculateContent(String contents){
+
     if (contents.length() < 2) {
       // Can't have a start/end guard, so tentatively add default guards
       contents = DEFAULT_GUARD + contents + DEFAULT_GUARD;
@@ -72,6 +87,10 @@ public final class CodaBarWriter extends OneDimensionalCodeWriter {
       }
     }
 
+    return contents;
+  }
+
+  public int decodeStartEnd(String contents){
     // The start character and the end character are decoded to 10 length each.
     int resultLength = 20;
     for (int i = 1; i < contents.length() - 1; i++) {
@@ -83,38 +102,54 @@ public final class CodaBarWriter extends OneDimensionalCodeWriter {
         throw new IllegalArgumentException("Cannot encode : '" + contents.charAt(i) + '\'');
       }
     }
-    // A blank is placed between each character.
-    resultLength += contents.length() - 1;
 
+    return resultLength;
+  }
+
+  public char checkStartEnd(int index, String contents){
+    char c = Character.toUpperCase(contents.charAt(index));
+    if (index == 0 || index == contents.length() - 1) {
+      // The start/end chars are not in the CodaBarReader.ALPHABET.
+      switch (c) {
+        case 'T':
+          c = 'A';
+          break;
+        case 'N':
+          c = 'B';
+          break;
+        case '*':
+          c = 'C';
+          break;
+        case 'E':
+          c = 'D';
+          break;
+      }
+    }
+    return c;
+  }
+
+  public int checkCode(char c){
+    int code = 0;
+    for (int i = 0; i < CodaBarReader.ALPHABET.length; i++) {
+      // Found any, because I checked above.
+      if (c == CodaBarReader.ALPHABET[i]) {
+        code = CodaBarReader.CHARACTER_ENCODINGS[i];
+        break;
+      }
+    }
+    return code;
+
+  }
+
+  public boolean[] forEachContent(int resultLength, String contents){
     boolean[] result = new boolean[resultLength];
     int position = 0;
     for (int index = 0; index < contents.length(); index++) {
-      char c = Character.toUpperCase(contents.charAt(index));
-      if (index == 0 || index == contents.length() - 1) {
-        // The start/end chars are not in the CodaBarReader.ALPHABET.
-        switch (c) {
-          case 'T':
-            c = 'A';
-            break;
-          case 'N':
-            c = 'B';
-            break;
-          case '*':
-            c = 'C';
-            break;
-          case 'E':
-            c = 'D';
-            break;
-        }
-      }
-      int code = 0;
-      for (int i = 0; i < CodaBarReader.ALPHABET.length; i++) {
-        // Found any, because I checked above.
-        if (c == CodaBarReader.ALPHABET[i]) {
-          code = CodaBarReader.CHARACTER_ENCODINGS[i];
-          break;
-        }
-      }
+
+      char c = checkStartEnd(index, contents);
+
+      int code = checkCode(c);
+
       boolean color = true;
       int counter = 0;
       int bit = 0;
@@ -136,5 +171,8 @@ public final class CodaBarWriter extends OneDimensionalCodeWriter {
     }
     return result;
   }
+
+
+
 }
 
