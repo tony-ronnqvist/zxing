@@ -13,24 +13,29 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({Code39ExtendedModeTestCase.class, Code39ExtendedBlackBox2TestCase.class, CodaBarWriterTestCase.class, EncoderTest.class})
+@SuiteClasses({Code39ExtendedModeTestCase.class, Code39ExtendedBlackBox2TestCase.class, CodaBarWriterTestCase.class, EncoderTest.class, StringUtilsTestCase.class, DetectorTest.class})
+
 public class TestSuite extends TestCase {
   /**
    * One time setup before the tests are run.
    */
   @BeforeClass
   public static void setup() {
-    CoverageTool2000.initCoverageMatrix(0, 24);
+    CoverageTool2000.initCoverageMatrix(0, 23);
     CoverageTool2000.initCoverageMatrix(1, 18);
-
+    CoverageTool2000.initCoverageMatrix(2, 12);
     CoverageTool2000.initCoverageMatrix(3,26);
+    
+    CoverageTool2000.initCoverageMatrix(5, 51);
+    CoverageTool2000.initCoverageMatrix(6, 30);
     CoverageTool2000.initCoverageMatrix(7,26);
+
   }
   /**
    * One time teardown after all the tests are run.
    */
   @AfterClass
   public static void teardown() {
-    System.out.println(CoverageTool2000.checkCoverage(0));
+    System.out.println("Coverage for Method 0: " + CoverageTool2000.checkCoverage(0));
   }
 }
