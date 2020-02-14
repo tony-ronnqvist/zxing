@@ -1,12 +1,14 @@
 package com.google.zxing;
 import com.google.zxing.aztec.detector.DetectorTest;
 import com.google.zxing.aztec.encoder.EncoderTest;
+import com.google.zxing.common.AbstractBlackBoxTestCase;
 import com.google.zxing.client.result.AddressBookParsedResultTestCase;
 import com.google.zxing.client.result.CalendarParsedResultTestCase;
 import com.google.zxing.client.result.ParsedReaderResultTestCase;
 import com.google.zxing.common.StringUtilsTestCase;
 import com.google.zxing.multi.MultiTestCase;
 import com.google.zxing.oned.CodaBarWriterTestCase;
+import com.google.zxing.oned.CodabarBlackBox1TestCase;
 import com.google.zxing.oned.Code39ExtendedBlackBox2TestCase;
 import com.google.zxing.oned.Code39ExtendedModeTestCase;
 import com.google.zxing.oned.rss.RSS14BlackBox1TestCase;
@@ -40,6 +42,8 @@ public class TestSuite extends TestCase {
     CoverageTool2000.initCoverageMatrix(6, 30);
     CoverageTool2000.initCoverageMatrix(7, 26);
     CoverageTool2000.initCoverageMatrix(8, 37);
+    CoverageTool2000.initCoverageMatrix(9, 11);
+    
 
   }
   /**
@@ -47,6 +51,7 @@ public class TestSuite extends TestCase {
    */
   @AfterClass
   public static void teardown() {
-    CoverageTool2000.checkAllCoverage(9);
+    CoverageTool2000.checkAllCoverage(10);
+
   }
 }
