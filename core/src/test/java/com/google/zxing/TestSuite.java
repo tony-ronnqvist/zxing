@@ -23,7 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({Code39ExtendedModeTestCase.class, Code39ExtendedBlackBox2TestCase.class, CodaBarWriterTestCase.class,
  EncoderTest.class, StringUtilsTestCase.class, DetectorTest.class, RSS14BlackBox1TestCase.class,
  RSS14BlackBox2TestCase.class, MultiTestCase.class, ParsedReaderResultTestCase.class, CalendarParsedResultTestCase.class,
-  AddressBookParsedResultTestCase.class})
+  AddressBookParsedResultTestCase.class, TestCoverage.class})
 
 public class TestSuite extends TestCase {
   /**
