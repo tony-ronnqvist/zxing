@@ -10,6 +10,11 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+// guessEncoding
+import com.google.zxing.common.StringUtils;
+import com.google.zxing.DecodeHintType;
+
+
 /**
  * Added test to increase the coverage on the chosen 10 - methods.
  */
@@ -101,6 +106,14 @@ public class TestCoverage extends Assert {
   }
 
   /**
+    * Test method testGuessEncodingPartTwo that for given input should guess SJIS encoding
+    */
+  @Test
+  public void testGuessEncodingPartTwo() {
+    assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0xd0, (byte) 0xd0, (byte) 0xd0}, null), "SJIS");
+  }
+
+  /*
    * Test whether a FormatException is thrown when check digit is used and incorrect.
    *
    * @throws FormatException
