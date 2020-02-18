@@ -7,6 +7,11 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+// guessEncoding
+import com.google.zxing.common.StringUtils;
+import com.google.zxing.DecodeHintType;
+
+
 /**
  * Added test to increase the coverage on the chosen 10 - methods.
  */
@@ -95,6 +100,16 @@ public class TestCoverage extends Assert {
 
     assertEquals(Arrays.toString(new CodaBarWriter().encode("1")), Arrays.toString(new CodaBarWriter().encode("1")));
 
+  }
+
+  /**
+    * Test method testGuessEncodingPartOne will test the part of guessEncoding were "hints" is defined and contains the key "CHARACTER_SET" 
+    */
+  @Test
+  public void testGuessEncodingPartOne() {
+    Map<DecodeHintType,?> hints = new Map<DecodeHintType, ?>();
+    hints.put(DecodeHintType.CHARACTER_SET);
+    assertEquals(StringUtils.guessEncoding(null, hints), hints.get(DecodeHintType.CHARACTER_SET).toString());
   }
 
 
