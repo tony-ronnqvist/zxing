@@ -278,4 +278,21 @@ public class TestCoverage extends Assert {
     doTestCode39NonExtended(decoded, encoded);
 
   }
+  /**
+   * Test method for decodeExtended to test the branch where a / is followed
+   * by a / (NOT next >= 'A' && next <= 'O') or (NOT (next == 'Z'))
+   */
+  @Test
+  public void testEncodedModuloException(){
+    String resultString = "//";
+    String code39 = "1000101110111010100010001010001010001000101000101000101110111010";
+
+    Code39Reader sut = new Code39Reader(false, true);
+    BitMatrix matrix = BitMatrix.parse(code39, "1", "0");
+    BitArray row = new BitArray(matrix.getWidth());
+    matrix.getRow(0, row);
+    assertThrows(FormatException.class, () ->{
+      sut.decodeRow(0, row, null);
+    });
+  }
 }
