@@ -1,10 +1,10 @@
 package com.google.zxing;
-
-
 import com.google.zxing.common.BitArray;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.oned.CodaBarWriter;
 import com.google.zxing.oned.Code39Reader;
+import com.google.zxing.oned.Code39Writer;
+import com.google.zxing.oned.rss.RSS14Reader;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -101,6 +101,76 @@ public class TestCoverage extends Assert {
   }
 
   /**
+   * Test whether a FormatException is thrown when check digit is used and incorrect.
+   *
+   * @throws FormatException
+   * @throws ChecksumException
+   * @throws NotFoundException
+   */
+  @Test
+  public void testCode39CheckDigitFalse() throws FormatException, ChecksumException, NotFoundException {
+
+    //"A*" encoded to binary
+    String encoded = "100101101101011010100101101011010010110100101101101";
+    doTestCheckDigitThrows(encoded);
+
+  }
+
+  /**
+   *  Test whether the correct result is returned when check digit is used. Should return
+   *  the character string with the check digit removed and replaced with an space.
+   *
+   * @throws FormatException
+   * @throws ChecksumException
+   * @throws NotFoundException
+   */
+  @Test
+  public void testCode39CheckDigitTrue() throws FormatException, ChecksumException, NotFoundException {
+
+    String decoded = "U ";
+    String encoded = "10001011101110101110001010101110100011101011101010111011101000101000101110111010";
+    doTestCheckDigit(decoded, encoded);
+
+  }
+
+
+  /**
+   * Helper for the testCode39CheckDigitFalse. Creates an instance to be checked.
+   *
+   * @param encodedResult string - with the barcode characters encoded in binary
+   */
+  private static void doTestCheckDigitThrows(String encodedResult){
+
+    Code39Reader sut = new Code39Reader(true, true);
+    BitMatrix matrix = BitMatrix.parse(encodedResult, "1", "0");
+    BitArray row = new BitArray(matrix.getWidth());
+    matrix.getRow(0, row);
+    assertThrows(ChecksumException.class, () ->{
+      sut.decodeRow(0, row, null);
+    });
+  }
+
+  /**
+   * Helper for the testCode39CheckDigitTrue. Creates an instance to be checked.
+   *
+   * @param expectedResult string - expected result after the binary has been decoded
+   * @param encodedResult string - with the barcode characters encoded in binary
+   * @throws FormatException if wrong barcode format is used
+   * @throws ChecksumException if checksum do not match expected
+   * @throws NotFoundException if character is not found.
+   */
+  private static void doTestCheckDigit(String expectedResult, String encodedResult)
+
+    throws FormatException, ChecksumException, NotFoundException {
+    Code39Reader sut = new Code39Reader(true, true);
+    BitMatrix matrix = BitMatrix.parse(encodedResult, "1", "0");
+    BitArray row = new BitArray(matrix.getWidth());
+    matrix.getRow(0, row);
+    Result result = sut.decodeRow(0, row, null);
+    assertEquals(expectedResult, result.getText());
+  }
+  
+  /**
    * Test method for decodeExtended to test the branch where a + is followed
    * by a + (NOT next >= 'A' && next <= 'Z')
    */
@@ -117,6 +187,7 @@ public class TestCoverage extends Assert {
       sut.decodeRow(0, row, null);
     });
   }
+  
   /**
    * Test method for decodeExtended to test the branch where a $ is followed
    * by a $ (NOT next >= 'A' && next <= 'Z')
@@ -134,6 +205,4 @@ public class TestCoverage extends Assert {
       sut.decodeRow(0, row, null);
     });
   }
-
-
 }
