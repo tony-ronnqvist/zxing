@@ -243,7 +243,7 @@ public class TestCoverage extends Assert {
 
 
   /**
-   *  Helper for the testCode39CheckDigitFalse. Creates an instance to be checked.
+   *  Helper for the testCode39NonExtended. Creates an instance to be checked.
    *
    *
    * @param expectedResult string - with expected result after decoded
@@ -277,5 +277,30 @@ public class TestCoverage extends Assert {
     String encoded = "100010111011101011101010001011101011101000101110111011101000101010101110001011101110101110001010101110111000101010101000111011101110101000111010101110100011101010101110001110101110101010001110101110101000111011101011100010101000101110111010";
     doTestCode39NonExtended(decoded, encoded);
 
+  }
+
+  /**
+   *  Helper for the testCode39CheckDigitFalse. Creates an instance to be checked.
+   *
+   * @param encodedResult string - with the encoded result in binary
+   * @throws FormatException if wrong barcode format is used
+   * @throws ChecksumException if checksum do not match expected
+   * @throws NotFoundException if character is not found
+   */
+  private static void doTestModFormatException(String encodedResult) {
+
+    Code39Reader sut = new Code39Reader(false, true);
+    BitMatrix matrix = BitMatrix.parse(encodedResult, "1", "0");
+    BitArray row = new BitArray(matrix.getWidth());
+    matrix.getRow(0, row);
+    assertThrows(FormatException.class, () ->{
+      sut.decodeRow(0, row, null);
+    });
+  }
+
+  @Test
+  public void testModFormatException(){
+    String encoded = "10001011101110101010001000100010101000100010001010001010001000101000101110111010";
+    doTestModFormatException(encoded);
   }
 }
