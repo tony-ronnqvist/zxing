@@ -1,7 +1,10 @@
 package com.google.zxing;
 
 
+import com.google.zxing.common.BitArray;
+import com.google.zxing.common.BitMatrix;
 import com.google.zxing.oned.CodaBarWriter;
+import com.google.zxing.oned.Code39Reader;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -97,7 +100,22 @@ public class TestCoverage extends Assert {
 
   }
 
+  /**
+   * Test method for decodeExtended to test the branch where a + is followed by a + (NOT next >= 'A' && next <= 'Z')
+   */
+  @Test
+  public void testEncodedPlus(){
+    String resultString = "++++";
+    String code39 = "100010111011101010001010001000101000101000100010100010100010001010001010001000101000101110111010";
 
-  
+    Code39Reader sut = new Code39Reader(false, true);
+    BitMatrix matrix = BitMatrix.parse(code39, "1", "0");
+    BitArray row = new BitArray(matrix.getWidth());
+    matrix.getRow(0, row);
+    assertThrows(FormatException.class, () ->{
+      sut.decodeRow(0, row, null);
+    });
+  }
+
 
 }
