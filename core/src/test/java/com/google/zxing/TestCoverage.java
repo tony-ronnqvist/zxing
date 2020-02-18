@@ -279,8 +279,8 @@ public class TestCoverage extends Assert {
 
   }
   /**
-   * Test method for decodeExtended to test the branch where a % is followed
-   * by a % (NOT next >= 'A' && next <= 'O') or (NOT (next == 'Z'))
+   * Test method for decodeExtended to test the branch where a / is followed
+   * by a / (NOT next >= 'A' && next <= 'O') or (NOT (next == 'Z'))
    */
   @Test
   public void testEncodedModuloException(){
