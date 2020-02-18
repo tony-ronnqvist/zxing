@@ -103,21 +103,10 @@ public class TestCoverage extends Assert {
   }
 
   /**
-    * Test method testGuessEncodingPartOne will test the part of guessEncoding were "hints" is defined and contains the key "CHARACTER_SET" 
-    */
-  @Test
-  public void testGuessEncodingPartOne() {
-    Map<DecodeHintType,?> hints = new Map<DecodeHintType, ?>();
-    hints.put(DecodeHintType.CHARACTER_SET);
-    assertEquals(StringUtils.guessEncoding(null, hints), hints.get(DecodeHintType.CHARACTER_SET).toString());
-  }
-
-  /**
     * Test method testGuessEncodingPartTwo that for given input should guess SJIS encoding
     */
   @Test
   public void testGuessEncodingPartTwo() {
-    System.out.println();
     assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0xd0, (byte) 0xd0, (byte) 0xd0}, null), "SJIS");
   }
 
