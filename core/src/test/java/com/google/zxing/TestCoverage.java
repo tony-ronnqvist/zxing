@@ -106,11 +106,11 @@ public class TestCoverage extends Assert {
   }
 
   /**
-    * Test method testGuessEncodingPartThree that for given input should guess encoding ISO8859_1
+    * Test method testGuessEncodingPartThree that for given input should guess encoding UTF-8
     */
   @Test
-  public void testGuessEncodingPartThree() {
-    assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0xa0, (byte) 0xa0, (byte) 0xa0}, null), "ISO8859_1");
+  public void testGuessEncodingPartFour() {
+    assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0x80, (byte) 0x80, (byte) 0x80}, null), "UTF-8");
   }
 
   /*
