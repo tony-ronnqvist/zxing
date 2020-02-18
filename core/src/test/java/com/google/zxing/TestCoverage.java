@@ -6,6 +6,7 @@ import com.google.zxing.oned.Code39Reader;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 // guessEncoding
@@ -216,6 +217,28 @@ public class TestCoverage extends Assert {
     assertThrows(FormatException.class, () ->{
       sut.decodeRow(0, row, null);
     });
+  }
+  /**
+   * Test method for decodeExtended to test the branch where a % is followed
+   * by a X This should replace both the % and X character with ascii value of 127
+   */
+  @Test
+  public void testEncodedModulus() throws FormatException, ChecksumException, NotFoundException {
+    String code39 = "10001011101110101110101000101110101110100010111011101110100010101010111000101110111010111000101010111011100010101010100011101110111010100011101010111010001110101010111000111010111010101000111010111010100011101110111010100010101011101000111011101011101000101011101110100010101010111000111011101010111000101011101011100010101011101110001011100010101011101000111010101110111000111010101010100010001000101000101110101110111000101110101010001110111010101000101110111010";
+
+    Code39Reader sut = new Code39Reader(false, true);
+    BitMatrix matrix = BitMatrix.parse(code39, "1", "0");
+    BitArray row = new BitArray(matrix.getWidth());
+    matrix.getRow(0, row);
+    Result result = sut.decodeRow(0, row, null);
+
+    byte[] ascii = result.getText().getBytes(StandardCharsets.US_ASCII);
+    String asciiString1 = Arrays.toString(ascii);
+
+    byte[] ascii2 = new byte[]{65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 127, 89, 90};
+
+    String asciiString2 = Arrays.toString(ascii2);
+    assertEquals(asciiString1, asciiString2);
   }
 
 
