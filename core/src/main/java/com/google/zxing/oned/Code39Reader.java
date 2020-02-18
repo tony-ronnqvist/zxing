@@ -268,6 +268,17 @@ public final class Code39Reader extends OneDReader {
     throw NotFoundException.getNotFoundInstance();
   }
 
+  /**
+   * Adds support for extended characters when decoding code 39 barcode sequences.
+   * In Full ASCII Code 39 Symbols 0-9, A-Z, ".", "-" and space are the same as their representations in Code 39.
+   *
+   * Translates extended characters to their lowercase counterpart.
+   * EXAMPLE: "+A" is decoded as "a"
+   *
+   * @param encoded - CharSequence to decode
+   * @return - String with the decoded CharSequence
+   * @throws FormatException
+   */
   private static String decodeExtended(CharSequence encoded) throws FormatException {
     int length = encoded.length();
     StringBuilder decoded = new StringBuilder(length);
@@ -286,7 +297,7 @@ public final class Code39Reader extends OneDReader {
               CoverageTool2000.setCoverageMatrix(0,11);
               decodedChar = (char) (next + 32);
             } else {
-              CoverageTool2000.setCoverageMatrix(0,12);
+              CoverageTool2000.setCoverageMatrix( 0,12);
               throw FormatException.getFormatInstance();
             }
             break;
