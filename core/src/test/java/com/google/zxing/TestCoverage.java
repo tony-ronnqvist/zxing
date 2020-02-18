@@ -243,7 +243,7 @@ public class TestCoverage extends Assert {
 
 
   /**
-   *  Helper for the testCode39CheckDigitFalse. Creates an instance to be checked.
+   *  Helper for the testCode39NonExtended. Creates an instance to be checked.
    *
    *
    * @param expectedResult string - with expected result after decoded
@@ -278,6 +278,26 @@ public class TestCoverage extends Assert {
     doTestCode39NonExtended(decoded, encoded);
 
   }
+
+  /**
+   *  Helper for the testCode39CheckDigitFalse. Creates an instance to be checked.
+   *
+   * @param encodedResult string - with the encoded result in binary
+   * @throws FormatException if wrong barcode format is used
+   * @throws ChecksumException if checksum do not match expected
+   * @throws NotFoundException if character is not found
+   */
+  private static void doTestModFormatException(String encodedResult) {
+
+    Code39Reader sut = new Code39Reader(false, true);
+    BitMatrix matrix = BitMatrix.parse(encodedResult, "1", "0");
+    BitArray row = new BitArray(matrix.getWidth());
+    matrix.getRow(0, row);
+    assertThrows(FormatException.class, () ->{
+      sut.decodeRow(0, row, null);
+    });
+  }
+
   /**
    * Test method for decodeExtended to test the branch where a / is followed
    * by a / (NOT next >= 'A' && next <= 'O') or (NOT (next == 'Z'))
@@ -294,5 +314,15 @@ public class TestCoverage extends Assert {
     assertThrows(FormatException.class, () ->{
       sut.decodeRow(0, row, null);
     });
+  }
+  
+  /**
+   * TTest whether a FormatException is thrown when extended mode is used and format is wrong.
+   *
+   */
+  @Test
+  public void testModFormatException(){
+    String encoded = "10001011101110101010001000100010101000100010001010001010001000101000101110111010";
+    doTestModFormatException(encoded);
   }
 }
