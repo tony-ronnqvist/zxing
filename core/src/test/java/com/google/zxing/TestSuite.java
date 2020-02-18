@@ -33,7 +33,7 @@ public class TestSuite extends TestCase {
    */
   @BeforeClass
   public static void setup() {
-    CoverageTool2000.initCoverageMatrix(0, 23);
+    CoverageTool2000.initCoverageMatrix(0, 31);
     CoverageTool2000.initCoverageMatrix(1, 13);
     CoverageTool2000.initCoverageMatrix(2, 12);
     CoverageTool2000.initCoverageMatrix(3, 26);
@@ -43,7 +43,7 @@ public class TestSuite extends TestCase {
     CoverageTool2000.initCoverageMatrix(7, 26);
     CoverageTool2000.initCoverageMatrix(8, 37);
     CoverageTool2000.initCoverageMatrix(9, 11);
-    
+
 
   }
   /**
