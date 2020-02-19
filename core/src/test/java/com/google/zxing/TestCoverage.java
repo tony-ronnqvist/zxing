@@ -7,6 +7,8 @@ import com.google.zxing.oned.Code39Writer;
 import com.google.zxing.oned.rss.RSS14Reader;
 import org.junit.Assert;
 import org.junit.Test;
+import java.nio.charset.StandardCharsets;
+
 
 import java.util.Arrays;
 
