@@ -325,4 +325,13 @@ public class TestCoverage extends Assert {
     String encoded = "10001011101110101010001000100010101000100010001010001010001000101000101110111010";
     doTestModFormatException(encoded);
   }
+
+  ​
+  /**
+    * Test method testGuessEncodingPartFour that for given input should guess encoding UTF-8
+    */
+  @Test
+  public void testGuessEncodingPartFour() {
+    assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0x80, (byte) 0x80, (byte) 0x80}, null), "UTF-8");
+  }
 }
