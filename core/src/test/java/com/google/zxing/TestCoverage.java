@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -38,16 +39,16 @@ public class TestCoverage extends Assert {
    * 2. Throws exception if the first character is in group ALT_START_END_CHARS and the last character is not in the ALT_START_END_CHARS
    */
   @Test
-  public void testCodaBarPartOne(){
+  public void testCodaBarPartOne() {
 
-      Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-        Arrays.toString(new CodaBarWriter().encode("A123456789-$"));
-      });
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      Arrays.toString(new CodaBarWriter().encode("A123456789-$"));
+    });
 
-      String expectedMessage = "Invalid start/end guards: A123456789-$";
-      String actualMessage = exception.getMessage();
+    String expectedMessage = "Invalid start/end guards: A123456789-$";
+    String actualMessage = exception.getMessage();
 
-      assertTrue(actualMessage.contains(expectedMessage));
+    assertTrue(actualMessage.contains(expectedMessage));
 
 
     Exception exception1 = assertThrows(IllegalArgumentException.class, () -> {
@@ -67,7 +68,7 @@ public class TestCoverage extends Assert {
    * 2. Throws exception if the last character is not in START_END_CHARS or ALT_START_END_CHARS
    */
   @Test
-  public void testCodaBarPartTwo(){
+  public void testCodaBarPartTwo() {
 
     Exception exception1 = assertThrows(IllegalArgumentException.class, () -> {
       Arrays.toString(new CodaBarWriter().encode("K123456789-$T"));
@@ -94,7 +95,7 @@ public class TestCoverage extends Assert {
    * Test that the character N is changes to B, that character is changes from * to C and that character is changes from E to D
    */
   @Test
-  public void testCodaBarPartThree(){
+  public void testCodaBarPartThree() {
 
     assertEquals(Arrays.toString(new CodaBarWriter().encode("N123456789-$*")), Arrays.toString(new CodaBarWriter().encode("B123456789-$C")));
 
@@ -106,21 +107,14 @@ public class TestCoverage extends Assert {
    * Test method testCodaBarPartOne will test the part of the method where content is less then two
    */
   @Test
-  public void testCodaBarPartFour(){
+  public void testCodaBarPartFour() {
 
     assertEquals(Arrays.toString(new CodaBarWriter().encode("1")), Arrays.toString(new CodaBarWriter().encode("1")));
 
   }
 
-  /**
-    * Test method testGuessEncodingPartThree that for given input should guess encoding ISO8859_1
-    */
-  @Test
-  public void testGuessEncodingPartThree() {
-    assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0xa0, (byte) 0xa0, (byte) 0xa0}, null), "ISO8859_1");
-  }
 
-  /*
+  /**
    * Test whether a FormatException is thrown when check digit is used and incorrect.
    *
    * @throws FormatException
@@ -128,7 +122,7 @@ public class TestCoverage extends Assert {
    * @throws NotFoundException
    */
   @Test
-  public void testCode39CheckDigitFalse(){
+  public void testCode39CheckDigitFalse() {
 
     //"A*" encoded to binary
     String encoded = "100101101101011010100101101011010010110100101101101";
@@ -137,8 +131,8 @@ public class TestCoverage extends Assert {
   }
 
   /**
-   *  Test whether the correct result is returned when check digit is used. Should return
-   *  the character string with the check digit removed and replaced with an space.
+   * Test whether the correct result is returned when check digit is used. Should return
+   * the character string with the check digit removed and replaced with an space.
    *
    * @throws FormatException
    * @throws ChecksumException
@@ -158,8 +152,8 @@ public class TestCoverage extends Assert {
    * Helper for the testCode39CheckDigitTrue. Creates an instance to be checked.
    *
    * @param expectedResult string - expected result after the binary has been decoded
-   * @param encodedResult string - with the barcode characters encoded in binary
-   * @throws FormatException if wrong barcode format is used
+   * @param encodedResult  string - with the barcode characters encoded in binary
+   * @throws FormatException   if wrong barcode format is used
    * @throws ChecksumException if checksum do not match expected
    * @throws NotFoundException if character is not found.
    */
@@ -180,13 +174,13 @@ public class TestCoverage extends Assert {
    *
    * @param encodedResult string - with the barcode characters encoded in binary
    */
-  private static void doTestCheckDigitThrows(String encodedResult){
+  private static void doTestCheckDigitThrows(String encodedResult) {
 
     Code39Reader sut = new Code39Reader(true, true);
     BitMatrix matrix = BitMatrix.parse(encodedResult, "1", "0");
     BitArray row = new BitArray(matrix.getWidth());
     matrix.getRow(0, row);
-    assertThrows(ChecksumException.class, () ->{
+    assertThrows(ChecksumException.class, () -> {
       sut.decodeRow(0, row, null);
     });
   }
@@ -196,7 +190,7 @@ public class TestCoverage extends Assert {
    * by a + (NOT next >= 'A' && next <= 'Z')
    */
   @Test
-  public void testEncodedPlus(){
+  public void testEncodedPlus() {
     String resultString = "++++";
     String code39 = "100010111011101010001010001000101000101000100010100010100010001010001010001000101000101110111010";
 
@@ -204,7 +198,7 @@ public class TestCoverage extends Assert {
     BitMatrix matrix = BitMatrix.parse(code39, "1", "0");
     BitArray row = new BitArray(matrix.getWidth());
     matrix.getRow(0, row);
-    assertThrows(FormatException.class, () ->{
+    assertThrows(FormatException.class, () -> {
       sut.decodeRow(0, row, null);
     });
   }
@@ -214,7 +208,7 @@ public class TestCoverage extends Assert {
    * by a $ (NOT next >= 'A' && next <= 'Z')
    */
   @Test
-  public void testEncodedDollar(){
+  public void testEncodedDollar() {
     String resultString = "$$$$";
     String code39 = "100010111011101010001000100010101000100010001010100010001000101010001000100010101000101110111010";
 
@@ -222,10 +216,11 @@ public class TestCoverage extends Assert {
     BitMatrix matrix = BitMatrix.parse(code39, "1", "0");
     BitArray row = new BitArray(matrix.getWidth());
     matrix.getRow(0, row);
-    assertThrows(FormatException.class, () ->{
+    assertThrows(FormatException.class, () -> {
       sut.decodeRow(0, row, null);
     });
   }
+
   /**
    * Test method for decodeExtended to test the branch where a % is followed
    * by a X This should replace both the % and X character with ascii value of 127
@@ -251,12 +246,11 @@ public class TestCoverage extends Assert {
 
 
   /**
-   *  Helper for the testCode39NonExtended. Creates an instance to be checked.
-   *
+   * Helper for the testCode39NonExtended. Creates an instance to be checked.
    *
    * @param expectedResult string - with expected result after decoded
-   * @param encodedResult string - with the encoded result in binary
-   * @throws FormatException if wrong barcode format is used
+   * @param encodedResult  string - with the encoded result in binary
+   * @throws FormatException   if wrong barcode format is used
    * @throws ChecksumException if checksum do not match expected
    * @throws NotFoundException if character is not found
    */
@@ -274,7 +268,7 @@ public class TestCoverage extends Assert {
   /**
    * Test that checks that the decoded result is correct when not using extended mode or check digit.
    *
-   * @throws FormatException if wrong barcode format is used
+   * @throws FormatException   if wrong barcode format is used
    * @throws ChecksumException if checksum do not match expected
    * @throws NotFoundException if character is not found
    */
@@ -288,10 +282,10 @@ public class TestCoverage extends Assert {
   }
 
   /**
-   *  Helper for the testCode39CheckDigitFalse. Creates an instance to be checked.
+   * Helper for the testCode39CheckDigitFalse. Creates an instance to be checked.
    *
    * @param encodedResult string - with the encoded result in binary
-   * @throws FormatException if wrong barcode format is used
+   * @throws FormatException   if wrong barcode format is used
    * @throws ChecksumException if checksum do not match expected
    * @throws NotFoundException if character is not found
    */
@@ -301,7 +295,7 @@ public class TestCoverage extends Assert {
     BitMatrix matrix = BitMatrix.parse(encodedResult, "1", "0");
     BitArray row = new BitArray(matrix.getWidth());
     matrix.getRow(0, row);
-    assertThrows(FormatException.class, () ->{
+    assertThrows(FormatException.class, () -> {
       sut.decodeRow(0, row, null);
     });
   }
@@ -311,146 +305,145 @@ public class TestCoverage extends Assert {
    * by a / (NOT next >= 'A' && next <= 'O') or (NOT (next == 'Z'))
    */
   @Test
-  public void testEncodedModuloException(){
+  public void testEncodedModuloException() {
     String resultString = "//";
     String code39 = "1000101110111010100010001010001010001000101000101000101110111010";
     Code39Reader sut = new Code39Reader(false, true);
     BitMatrix matrix = BitMatrix.parse(code39, "1", "0");
     BitArray row = new BitArray(matrix.getWidth());
     matrix.getRow(0, row);
-    assertThrows(FormatException.class, () ->{
+    assertThrows(FormatException.class, () -> {
       sut.decodeRow(0, row, null);
     });
   }
-  
+
   /**
    * TTest whether a FormatException is thrown when extended mode is used and format is wrong.
-   *
    */
   @Test
-  public void testModFormatException(){
+  public void testModFormatException() {
     String encoded = "10001011101110101010001000100010101000100010001010001010001000101000101110111010";
     doTestModFormatException(encoded);
   }
-  
-   /**
-   *Test method for nbDatablocks=nbLayers=1
+
+  /**
+   * Test method for nbDatablocks=nbLayers=1
    */
-   @Test
+  @Test
   public void testCorrectBits1() throws FormatException {
 
-    BitMatrix bits=new BitMatrix(16);
-    boolean [][]image=new boolean[16][16];
-    for (int i=0;i<16;i++){
-      for (int j=0;j<16;j++){
-        image[i][j]=true;
+    BitMatrix bits = new BitMatrix(16);
+    boolean[][] image = new boolean[16][16];
+    for (int i = 0; i < 16; i++) {
+      for (int j = 0; j < 16; j++) {
+        image[i][j] = true;
       }
     }
     bits.parse(image);
     ResultPoint[] points = new ResultPoint[0];
-    AztecDetectorResult t1= new AztecDetectorResult(bits,points, true,1,1);
-    Decoder r1=new Decoder();
-    try{
+    AztecDetectorResult t1 = new AztecDetectorResult(bits, points, true, 1, 1);
+    Decoder r1 = new Decoder();
+    try {
       r1.decode(t1);
-    }catch (Exception e) {
-    }
-  }
-  
-    /**
-   *Test method for array length 1
-   */
-  @Test
-  public void testCorrectBits2() throws FormatException {
-    BitMatrix bits=new BitMatrix(16);
-    boolean [][]image=new boolean[1][1];
-    for (int i=0;i<1;i++){
-      for (int j=0;j<1;j++){
-        image[i][j]=false;
-      }
-    }
-    bits.parse(image);
-    ResultPoint[] points = new ResultPoint[0];
-    AztecDetectorResult t1= new AztecDetectorResult(bits,points, true,1,1);
-    Decoder r1=new Decoder();
-    try{
-      r1.decode(t1);
-    }catch (Exception e) {
-    }
-  }
-  
-   /**
-   *Test method for nbDatablocks=25
-   */
-  @Test
-  public void testCorrectBits3() throws FormatException {
-    BitMatrix bits=new BitMatrix(25);
-    boolean [][]image=new boolean[25][25];
-    for (int i=0;i<25;i++){
-      for (int j=0;j<25;j++){
-        image[i][j]=false;
-      }
-    }
-    bits.parse(image);
-    ResultPoint[] points = new ResultPoint[0];
-    AztecDetectorResult t1= new AztecDetectorResult(bits,points, true,625,1);
-    Decoder r1=new Decoder();
-    try{
-      r1.decode(t1);
-    }catch (Exception e) {
-    }
-  }
-
-    /**
-   *Test method for numCodewords < numDataCodewords
-   */
-  @Test
-  public void testCorrectBits4() throws FormatException {
-    BitMatrix bits=new BitMatrix(16);
-    boolean [][]image=new boolean[16][16];
-    for (int i=0;i<16;i++){
-      for (int j=0;j<16;j++){
-        image[i][j]=false;
-      }
-    }
-    bits.parse(image);
-    ResultPoint[] points = new ResultPoint[0];
-    AztecDetectorResult t1= new AztecDetectorResult(bits,points, true,256,1);
-    Decoder r1=new Decoder();
-    try{
-      r1.decode(t1);
-    }catch (Exception e) {
+    } catch (Exception e) {
     }
   }
 
   /**
-  * Test method testGuessEncodingPartOne will test the part of guessEncoding were "hints" is defined and contains the key "CHARACTER_SET" 
-  */
+   * Test method for array length 1
+   */
+  @Test
+  public void testCorrectBits2() throws FormatException {
+    BitMatrix bits = new BitMatrix(16);
+    boolean[][] image = new boolean[1][1];
+    for (int i = 0; i < 1; i++) {
+      for (int j = 0; j < 1; j++) {
+        image[i][j] = false;
+      }
+    }
+    bits.parse(image);
+    ResultPoint[] points = new ResultPoint[0];
+    AztecDetectorResult t1 = new AztecDetectorResult(bits, points, true, 1, 1);
+    Decoder r1 = new Decoder();
+    try {
+      r1.decode(t1);
+    } catch (Exception e) {
+    }
+  }
+
+  /**
+   * Test method for nbDatablocks=25
+   */
+  @Test
+  public void testCorrectBits3() throws FormatException {
+    BitMatrix bits = new BitMatrix(25);
+    boolean[][] image = new boolean[25][25];
+    for (int i = 0; i < 25; i++) {
+      for (int j = 0; j < 25; j++) {
+        image[i][j] = false;
+      }
+    }
+    bits.parse(image);
+    ResultPoint[] points = new ResultPoint[0];
+    AztecDetectorResult t1 = new AztecDetectorResult(bits, points, true, 625, 1);
+    Decoder r1 = new Decoder();
+    try {
+      r1.decode(t1);
+    } catch (Exception e) {
+    }
+  }
+
+  /**
+   * Test method for numCodewords < numDataCodewords
+   */
+  @Test
+  public void testCorrectBits4() throws FormatException {
+    BitMatrix bits = new BitMatrix(16);
+    boolean[][] image = new boolean[16][16];
+    for (int i = 0; i < 16; i++) {
+      for (int j = 0; j < 16; j++) {
+        image[i][j] = false;
+      }
+    }
+    bits.parse(image);
+    ResultPoint[] points = new ResultPoint[0];
+    AztecDetectorResult t1 = new AztecDetectorResult(bits, points, true, 256, 1);
+    Decoder r1 = new Decoder();
+    try {
+      r1.decode(t1);
+    } catch (Exception e) {
+    }
+  }
+
+  /**
+   * Test method testGuessEncodingPartOne will test the part of guessEncoding were "hints" is defined and contains the key "CHARACTER_SET"
+   */
   @Test
   public void testGuessEncodingPartOne() {
-    Map<DecodeHintType,String> hints = new HashMap<>();
+    Map<DecodeHintType, String> hints = new HashMap<>();
     hints.put(DecodeHintType.CHARACTER_SET, "ENCODING");
     assertEquals(StringUtils.guessEncoding(null, hints), hints.get(DecodeHintType.CHARACTER_SET).toString());
   }
 
   /**
-  * Test method testGuessEncodingPartTwo that for given input should guess SJIS encoding
-  */
+   * Test method testGuessEncodingPartTwo that for given input should guess SJIS encoding
+   */
   @Test
   public void testGuessEncodingPartTwo() {
     assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0xd0, (byte) 0xd0, (byte) 0xd0}, null), "SJIS");
   }
 
   /**
-  * Test method testGuessEncodingPartThree that for given input should guess encoding ISO8859_1
-  */
+   * Test method testGuessEncodingPartThree that for given input should guess encoding ISO8859_1
+   */
   @Test
   public void testGuessEncodingPartThree() {
     assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0xa0, (byte) 0xa0, (byte) 0xa0}, null), "ISO8859_1");
   }
-  ​
+
   /**
-    * Test method testGuessEncodingPartFour that for given input should guess encoding UTF-8
-    */
+   * Test method testGuessEncodingPartFour that for given input should guess encoding UTF-8
+   */
   @Test
   public void testGuessEncodingPartFour() {
     assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0x80, (byte) 0x80, (byte) 0x80}, null), "UTF-8");
