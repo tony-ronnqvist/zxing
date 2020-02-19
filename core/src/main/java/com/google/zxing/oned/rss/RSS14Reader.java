@@ -187,10 +187,11 @@ public final class RSS14Reader extends AbstractRSSReader {
 
   private DataCharacter decodeDataCharacter(BitArray row, FinderPattern pattern, boolean outsideChar)
       throws NotFoundException {
-
+    //Manual count +1, Total = 1
     int[] counters = getDataCharacterCounters();
     Arrays.fill(counters, 0);
     if (outsideChar) {
+      //Manual count +1, Total = 2
       recordPatternInReverse(row, pattern.getStartEnd()[0], counters);
       CoverageTool2000.setCoverageMatrix(1,0);
     } else {
@@ -198,6 +199,7 @@ public final class RSS14Reader extends AbstractRSSReader {
       // reverse it
       CoverageTool2000.setCoverageMatrix(1,1);
       for (int i = 0, j = counters.length - 1; i < j; i++, j--) {
+        //Manual count +1, Total = 3
         int temp = counters[i];
         counters[i] = counters[j];
         counters[j] = temp;
@@ -213,13 +215,16 @@ public final class RSS14Reader extends AbstractRSSReader {
     float[] evenRoundingErrors = this.getEvenRoundingErrors();
 
     for (int i = 0; i < counters.length; i++) {
+      //Manual count +1, Total = 4
       float value = counters[i] / elementWidth;
       int count = (int) (value + 0.5f); // Round
 
       if (count < 1) {
+        //Manual count +1, Total = 5
         count = 1;
         CoverageTool2000.setCoverageMatrix(1,2);
       } else if (count > 8) {
+        //Manual count +1, Total = 6
         CoverageTool2000.setCoverageMatrix(1,3);
         count = 8;
       } else {
@@ -227,6 +232,7 @@ public final class RSS14Reader extends AbstractRSSReader {
       }
       int offset = i / 2;
       if ((i & 0x01) == 0) {
+        //Manual count +1, Total = 7
         oddCounts[offset] = count;
         oddRoundingErrors[offset] = value - count;
         CoverageTool2000.setCoverageMatrix(1,5);
@@ -242,6 +248,7 @@ public final class RSS14Reader extends AbstractRSSReader {
     int oddSum = 0;
     int oddChecksumPortion = 0;
     for (int i = oddCounts.length - 1; i >= 0; i--) {
+      //Manual count +1, Total = 8
       oddChecksumPortion *= 9;
       oddChecksumPortion += oddCounts[i];
       oddSum += oddCounts[i];
@@ -249,6 +256,7 @@ public final class RSS14Reader extends AbstractRSSReader {
     int evenChecksumPortion = 0;
     int evenSum = 0;
     for (int i = evenCounts.length - 1; i >= 0; i--) {
+      //Manual count +1, Total = 9
       evenChecksumPortion *= 9;
       evenChecksumPortion += evenCounts[i];
       evenSum += evenCounts[i];
@@ -256,8 +264,10 @@ public final class RSS14Reader extends AbstractRSSReader {
     int checksumPortion = oddChecksumPortion + 3 * evenChecksumPortion;
 
     if (outsideChar) {
+      //Manual count +1, Total = 10
       CoverageTool2000.setCoverageMatrix(1,7);
       if ((oddSum & 0x01) != 0 || oddSum > 12 || oddSum < 4) {
+        //Manual count +3, Total = 13
         CoverageTool2000.setCoverageMatrix(1,8);
         throw NotFoundException.getNotFoundInstance();
       }
@@ -273,6 +283,7 @@ public final class RSS14Reader extends AbstractRSSReader {
     } else {
       CoverageTool2000.setCoverageMatrix(1,10);
       if ((evenSum & 0x01) != 0 || evenSum > 10 || evenSum < 4) {
+        //Manual count +3, Total = 16
         CoverageTool2000.setCoverageMatrix(1,11);
         throw NotFoundException.getNotFoundInstance();
       }
