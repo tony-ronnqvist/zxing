@@ -93,6 +93,9 @@ public abstract class OneDReader implements Reader {
    */
   private Result doDecode(BinaryBitmap image,
                           Map<DecodeHintType,?> hints) throws NotFoundException {
+
+    // +1 for start node - Result: 1
+
     int width = image.getWidth();
     int height = image.getHeight();
     BitArray row = new BitArray(width);
@@ -101,6 +104,7 @@ public abstract class OneDReader implements Reader {
     int rowStep = Math.max(1, height >> (tryHarder ? 8 : 5));
     int maxLines;
     if (tryHarder) {
+      //Manual branch counting: +1 - Result: 2
       CoverageTool2000.setCoverageMatrix(9, 0);
       maxLines = height; // Look at the whole image, not just the center
     } else {
@@ -110,12 +114,14 @@ public abstract class OneDReader implements Reader {
 
     int middle = height / 2;
     for (int x = 0; x < maxLines; x++) {
+      //Manual branch counting: +1 - Result: 3
 
       // Scanning from the middle out. Determine which row we're looking at next:
       int rowStepsAboveOrBelow = (x + 1) / 2;
       boolean isAbove = (x & 0x01) == 0; // i.e. is x even?
       int rowNumber = middle + rowStep * (isAbove ? rowStepsAboveOrBelow : -rowStepsAboveOrBelow);
       if (rowNumber < 0 || rowNumber >= height) {
+        //Manual branch counting: +2 - Result: 5
         CoverageTool2000.setCoverageMatrix(9, 2);
         // Oops, if we run off the top or bottom, stop
         break;
@@ -123,9 +129,11 @@ public abstract class OneDReader implements Reader {
 
       // Estimate black point for this row and load it:
       try {
+        //Manual branch counting: +1 - Result: 6
         CoverageTool2000.setCoverageMatrix(9, 3);
         row = image.getBlackRow(rowNumber, row);
       } catch (NotFoundException ignored) {
+        //Manual branch counting: +1 - Result: 7
         CoverageTool2000.setCoverageMatrix(9, 4);
         continue;
       }
@@ -133,7 +141,9 @@ public abstract class OneDReader implements Reader {
       // While we have the image data in a BitArray, it's fairly cheap to reverse it in place to
       // handle decoding upside down barcodes.
       for (int attempt = 0; attempt < 2; attempt++) {
+        //Manual branch counting: +1 - Result: 8
         if (attempt == 1) { // trying again?
+          //Manual branch counting: +1 - Result: 9
           CoverageTool2000.setCoverageMatrix(9, 5);
           row.reverse(); // reverse the row and continue
           // This means we will only ever draw result points *once* in the life of this method
@@ -141,6 +151,7 @@ public abstract class OneDReader implements Reader {
           // don't want to clutter with noise from every single row scan -- just the scans
           // that start on the center line.
           if (hints != null && hints.containsKey(DecodeHintType.NEED_RESULT_POINT_CALLBACK)) {
+            //Manual branch counting: +2 - Result: 11
             CoverageTool2000.setCoverageMatrix(9, 6);
             Map<DecodeHintType,Object> newHints = new EnumMap<>(DecodeHintType.class);
             newHints.putAll(hints);
@@ -149,17 +160,20 @@ public abstract class OneDReader implements Reader {
           }
         }
         try {
+          //Manual branch counting: +1 - Result: 12
           CoverageTool2000.setCoverageMatrix(9, 7);
           // Look for a barcode
           Result result = decodeRow(rowNumber, row, hints);
           // We found our barcode
           if (attempt == 1) {
+            //Manual branch counting: +1 - Result: 13
             CoverageTool2000.setCoverageMatrix(9, 8);
             // But it was upside down, so note that
             result.putMetadata(ResultMetadataType.ORIENTATION, 180);
             // And remember to flip the result points horizontally.
             ResultPoint[] points = result.getResultPoints();
             if (points != null) {
+              //Manual branch counting: +1 - Result: 14
               CoverageTool2000.setCoverageMatrix(9, 9);
               points[0] = new ResultPoint(width - points[0].getX() - 1, points[0].getY());
               points[1] = new ResultPoint(width - points[1].getX() - 1, points[1].getY());
@@ -167,12 +181,13 @@ public abstract class OneDReader implements Reader {
           }
           return result;
         } catch (ReaderException re) {
+          //Manual branch counting: +1 - Result: 15
           CoverageTool2000.setCoverageMatrix(9, 10);
           // continue -- just couldn't decode this row
         }
       }
     }
-
+    //Manual branch counting end result: 15
     throw NotFoundException.getNotFoundInstance();
   }
 
