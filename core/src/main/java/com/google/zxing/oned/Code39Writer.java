@@ -102,73 +102,77 @@ public final class Code39Writer extends OneDimensionalCodeWriter {
      int length = contents.length();
      StringBuilder extendedContent = new StringBuilder();
      for (int i = 0; i < length; i++) {
-       char character = contents.charAt(i);
-       switch (character) {
-         case '\u0000':
-           CoverageTool2000.setCoverageMatrix(6,0);
-           extendedContent.append("%U");
-           break;
-         case ' ':
-           CoverageTool2000.setCoverageMatrix(6,1);
-         case '-':
-           CoverageTool2000.setCoverageMatrix(6,2);
-         case '.':
-           CoverageTool2000.setCoverageMatrix(6,3);
-           extendedContent.append(character);
-           break;
-         case '@':
-           CoverageTool2000.setCoverageMatrix(6,4);
-           extendedContent.append("%V");
-           break;
-         case '`':
-           CoverageTool2000.setCoverageMatrix(6,5);
-           extendedContent.append("%W");
-           break;
-         default:
-           if (character <= 26) {
-             CoverageTool2000.setCoverageMatrix(6,6);
-             extendedContent.append('$');
-             extendedContent.append((char) ('A' + (character - 1)));
-           } else if (character < ' ') {
-             CoverageTool2000.setCoverageMatrix(6,7);
-             extendedContent.append('%');
-             extendedContent.append((char) ('A' + (character - 27)));
-           } else if (character <= ',' || character == '/' || character == ':') {
-             CoverageTool2000.setCoverageMatrix(6,8);
-             extendedContent.append('/');
-             extendedContent.append((char) ('A' + (character - 33)));
-           } else if (character <= '9') {
-             CoverageTool2000.setCoverageMatrix(6,9);
-             extendedContent.append((char) ('0' + (character - 48)));
-           } else if (character <= '?') {
-             CoverageTool2000.setCoverageMatrix(6,10);
-             extendedContent.append('%');
-             extendedContent.append((char) ('F' + (character - 59)));
-           } else if (character <= 'Z') {
-             CoverageTool2000.setCoverageMatrix(6,11);
-             extendedContent.append((char) ('A' + (character - 65)));
-           } else if (character <= '_') {
-             CoverageTool2000.setCoverageMatrix(6,12);
-             extendedContent.append('%');
-             extendedContent.append((char) ('K' + (character - 91)));
-           } else if (character <= 'z') {
-             CoverageTool2000.setCoverageMatrix(6,13);
-             extendedContent.append('+');
-             extendedContent.append((char) ('A' + (character - 97)));
-           } else if (character <= 127) {
-             CoverageTool2000.setCoverageMatrix(6,14);
-             extendedContent.append('%');
-             extendedContent.append((char) ('P' + (character - 123)));
-           } else {
-             CoverageTool2000.setCoverageMatrix(6,15);
-             throw new IllegalArgumentException(
-               "Requested content contains a non-encodable character: '" + contents.charAt(i) + "'");
-           }
-           break;
-       }
-    }
+       checkCharacters(contents, extendedContent, i);
+     }
 
     return extendedContent.toString();
+  }
+
+  private static void checkCharacters(String contents, StringBuilder extendedContent, int i) {
+    char character = contents.charAt(i);
+    switch (character) {
+      case '\u0000':
+        CoverageTool2000.setCoverageMatrix(6,0);
+        extendedContent.append("%U");
+        break;
+      case ' ':
+        CoverageTool2000.setCoverageMatrix(6,1);
+      case '-':
+        CoverageTool2000.setCoverageMatrix(6,2);
+      case '.':
+        CoverageTool2000.setCoverageMatrix(6,3);
+        extendedContent.append(character);
+        break;
+      case '@':
+        CoverageTool2000.setCoverageMatrix(6,4);
+        extendedContent.append("%V");
+        break;
+      case '`':
+        CoverageTool2000.setCoverageMatrix(6,5);
+        extendedContent.append("%W");
+        break;
+      default:
+        if (character <= 26) {
+          CoverageTool2000.setCoverageMatrix(6,6);
+          extendedContent.append('$');
+          extendedContent.append((char) ('A' + (character - 1)));
+        } else if (character < ' ') {
+          CoverageTool2000.setCoverageMatrix(6,7);
+          extendedContent.append('%');
+          extendedContent.append((char) ('A' + (character - 27)));
+        } else if (character <= ',' || character == '/' || character == ':') {
+          CoverageTool2000.setCoverageMatrix(6,8);
+          extendedContent.append('/');
+          extendedContent.append((char) ('A' + (character - 33)));
+        } else if (character <= '9') {
+          CoverageTool2000.setCoverageMatrix(6,9);
+          extendedContent.append((char) ('0' + (character - 48)));
+        } else if (character <= '?') {
+          CoverageTool2000.setCoverageMatrix(6,10);
+          extendedContent.append('%');
+          extendedContent.append((char) ('F' + (character - 59)));
+        } else if (character <= 'Z') {
+          CoverageTool2000.setCoverageMatrix(6,11);
+          extendedContent.append((char) ('A' + (character - 65)));
+        } else if (character <= '_') {
+          CoverageTool2000.setCoverageMatrix(6,12);
+          extendedContent.append('%');
+          extendedContent.append((char) ('K' + (character - 91)));
+        } else if (character <= 'z') {
+          CoverageTool2000.setCoverageMatrix(6,13);
+          extendedContent.append('+');
+          extendedContent.append((char) ('A' + (character - 97)));
+        } else if (character <= 127) {
+          CoverageTool2000.setCoverageMatrix(6,14);
+          extendedContent.append('%');
+          extendedContent.append((char) ('P' + (character - 123)));
+        } else {
+          CoverageTool2000.setCoverageMatrix(6,15);
+          throw new IllegalArgumentException(
+            "Requested content contains a non-encodable character: '" + contents.charAt(i) + "'");
+        }
+        break;
+    }
   }
 
 }
