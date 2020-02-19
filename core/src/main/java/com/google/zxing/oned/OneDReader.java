@@ -118,10 +118,10 @@ public abstract class OneDReader implements Reader {
 
       // Scanning from the middle out. Determine which row we're looking at next:
       int rowStepsAboveOrBelow = (x + 1) / 2;
-      boolean isAbove = (x & 0x01) == 0; // i.e. is x even?
-      int rowNumber = middle + rowStep * (isAbove ? rowStepsAboveOrBelow : -rowStepsAboveOrBelow);
+      boolean isAbove = (x & 0x01) == 0; // i.e. is x even?  //Manual branch counting: +1 - Result: 4
+      int rowNumber = middle + rowStep * (isAbove ? rowStepsAboveOrBelow : -rowStepsAboveOrBelow); //Manual branch counting: +1 - Result: 5
       if (rowNumber < 0 || rowNumber >= height) {
-        //Manual branch counting: +2 - Result: 5
+        //Manual branch counting: +2 - Result: 7
         CoverageTool2000.setCoverageMatrix(9, 2);
         // Oops, if we run off the top or bottom, stop
         break;
@@ -129,11 +129,10 @@ public abstract class OneDReader implements Reader {
 
       // Estimate black point for this row and load it:
       try {
-        //Manual branch counting: +1 - Result: 6
+        //Manual branch counting: +1 - Result: 8
         CoverageTool2000.setCoverageMatrix(9, 3);
         row = image.getBlackRow(rowNumber, row);
       } catch (NotFoundException ignored) {
-        //Manual branch counting: +1 - Result: 7
         CoverageTool2000.setCoverageMatrix(9, 4);
         continue;
       }
@@ -141,9 +140,9 @@ public abstract class OneDReader implements Reader {
       // While we have the image data in a BitArray, it's fairly cheap to reverse it in place to
       // handle decoding upside down barcodes.
       for (int attempt = 0; attempt < 2; attempt++) {
-        //Manual branch counting: +1 - Result: 8
+        //Manual branch counting: +1 - Result: 9
         if (attempt == 1) { // trying again?
-          //Manual branch counting: +1 - Result: 9
+          //Manual branch counting: +1 - Result: 10
           CoverageTool2000.setCoverageMatrix(9, 5);
           row.reverse(); // reverse the row and continue
           // This means we will only ever draw result points *once* in the life of this method
@@ -151,7 +150,7 @@ public abstract class OneDReader implements Reader {
           // don't want to clutter with noise from every single row scan -- just the scans
           // that start on the center line.
           if (hints != null && hints.containsKey(DecodeHintType.NEED_RESULT_POINT_CALLBACK)) {
-            //Manual branch counting: +2 - Result: 11
+            //Manual branch counting: +2 - Result: 12
             CoverageTool2000.setCoverageMatrix(9, 6);
             Map<DecodeHintType,Object> newHints = new EnumMap<>(DecodeHintType.class);
             newHints.putAll(hints);
@@ -160,28 +159,28 @@ public abstract class OneDReader implements Reader {
           }
         }
         try {
-          //Manual branch counting: +1 - Result: 12
+          //Manual branch counting: +1 - Result: 13
           CoverageTool2000.setCoverageMatrix(9, 7);
           // Look for a barcode
           Result result = decodeRow(rowNumber, row, hints);
           // We found our barcode
           if (attempt == 1) {
-            //Manual branch counting: +1 - Result: 13
+            //Manual branch counting: +1 - Result: 14
             CoverageTool2000.setCoverageMatrix(9, 8);
             // But it was upside down, so note that
             result.putMetadata(ResultMetadataType.ORIENTATION, 180);
             // And remember to flip the result points horizontally.
             ResultPoint[] points = result.getResultPoints();
             if (points != null) {
-              //Manual branch counting: +1 - Result: 14
+              //Manual branch counting: +1 - Result: 15
               CoverageTool2000.setCoverageMatrix(9, 9);
               points[0] = new ResultPoint(width - points[0].getX() - 1, points[0].getY());
               points[1] = new ResultPoint(width - points[1].getX() - 1, points[1].getY());
             }
           }
+          //Manual branch counting: +1 - Result: 16
           return result;
         } catch (ReaderException re) {
-          //Manual branch counting: +1 - Result: 15
           CoverageTool2000.setCoverageMatrix(9, 10);
           // continue -- just couldn't decode this row
         }
