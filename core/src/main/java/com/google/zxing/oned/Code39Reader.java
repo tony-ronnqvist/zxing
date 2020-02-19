@@ -105,9 +105,11 @@ public final class Code39Reader extends OneDReader {
     char decodedChar;
     int lastStart;
     do {
+      CoverageTool2000.setCoverageMatrix(0,0);
       recordPattern(row, nextStart, theCounters);
       int pattern = toNarrowWidePattern(theCounters);
       if (pattern < 0) {
+        CoverageTool2000.setCoverageMatrix(0,1);
         throw NotFoundException.getNotFoundInstance();
       }
       decodedChar = patternToChar(pattern);
@@ -130,19 +132,23 @@ public final class Code39Reader extends OneDReader {
     // If 50% of last pattern size, following last pattern, is not whitespace, fail
     // (but if it's whitespace to the very end of the image, that's OK)
     if (nextStart != end && (whiteSpaceAfterEnd * 2) < lastPatternSize) {
+      CoverageTool2000.setCoverageMatrix(0,2);
       throw NotFoundException.getNotFoundInstance();
     }
 
     if (usingCheckDigit) {
+      CoverageTool2000.setCoverageMatrix(0,3);
       int max = result.length() - 1;
       int total = 0;
       for (int i = 0; i < max; i++) {
         total += ALPHABET_STRING.indexOf(decodeRowResult.charAt(i));
       }
       if (result.charAt(max) != ALPHABET_STRING.charAt(total % 43)) {
+        CoverageTool2000.setCoverageMatrix(0,4);
         throw ChecksumException.getChecksumInstance();
       }
       result.setLength(max);
+      CoverageTool2000.setCoverageMatrix(0,5);
     }
 
     if (result.length() == 0) {
@@ -152,8 +158,10 @@ public final class Code39Reader extends OneDReader {
 
     String resultString;
     if (extendedMode) {
+      CoverageTool2000.setCoverageMatrix(0,6);
       resultString = decodeExtended(result);
     } else {
+      CoverageTool2000.setCoverageMatrix(0,7);
       resultString = result.toString();
     }
 
@@ -264,78 +272,78 @@ public final class Code39Reader extends OneDReader {
     int length = encoded.length();
     StringBuilder decoded = new StringBuilder(length);
     for (int i = 0; i < length; i++) {
-      CoverageTool2000.setCoverageMatrix(0,0);
+      CoverageTool2000.setCoverageMatrix(0,8);
       char c = encoded.charAt(i);
       if (c == '+' || c == '$' || c == '%' || c == '/') {
-        CoverageTool2000.setCoverageMatrix(0,1);
+        CoverageTool2000.setCoverageMatrix(0,9);
         char next = encoded.charAt(i + 1);
         char decodedChar = '\0';
         switch (c) {
           case '+':
-            CoverageTool2000.setCoverageMatrix(0,2);
+            CoverageTool2000.setCoverageMatrix(0,10);
             // +A to +Z map to a to z
             if (next >= 'A' && next <= 'Z') {
-              CoverageTool2000.setCoverageMatrix(0,3);
+              CoverageTool2000.setCoverageMatrix(0,11);
               decodedChar = (char) (next + 32);
             } else {
-              CoverageTool2000.setCoverageMatrix(0,4);
+              CoverageTool2000.setCoverageMatrix(0,12);
               throw FormatException.getFormatInstance();
             }
             break;
           case '$':
-            CoverageTool2000.setCoverageMatrix(0,5);
+            CoverageTool2000.setCoverageMatrix(0,13);
             // $A to $Z map to control codes SH to SB
             if (next >= 'A' && next <= 'Z') {
-              CoverageTool2000.setCoverageMatrix(0,6);
+              CoverageTool2000.setCoverageMatrix(0,14);
               decodedChar = (char) (next - 64);
             } else {
-              CoverageTool2000.setCoverageMatrix(0,7);
+              CoverageTool2000.setCoverageMatrix(0,15);
               throw FormatException.getFormatInstance();
             }
             break;
           case '%':
-            CoverageTool2000.setCoverageMatrix(0,8);
+            CoverageTool2000.setCoverageMatrix(0,16);
             // %A to %E map to control codes ESC to US
             if (next >= 'A' && next <= 'E') {
-              CoverageTool2000.setCoverageMatrix(0,9);
+              CoverageTool2000.setCoverageMatrix(0,17);
               decodedChar = (char) (next - 38);
             } else if (next >= 'F' && next <= 'J') {
-              CoverageTool2000.setCoverageMatrix(0,10);
+              CoverageTool2000.setCoverageMatrix(0,18);
               decodedChar = (char) (next - 11);
             } else if (next >= 'K' && next <= 'O') {
-              CoverageTool2000.setCoverageMatrix(0,11);
+              CoverageTool2000.setCoverageMatrix(0,19);
               decodedChar = (char) (next + 16);
             } else if (next >= 'P' && next <= 'T') {
-              CoverageTool2000.setCoverageMatrix(0,12);
+              CoverageTool2000.setCoverageMatrix(0,20);
               decodedChar = (char) (next + 43);
             } else if (next == 'U') {
-              CoverageTool2000.setCoverageMatrix(0,13);
+              CoverageTool2000.setCoverageMatrix(0,21);
               decodedChar = (char) 0;
             } else if (next == 'V') {
-              CoverageTool2000.setCoverageMatrix(0,14);
+              CoverageTool2000.setCoverageMatrix(0,22);
               decodedChar = '@';
             } else if (next == 'W') {
-              CoverageTool2000.setCoverageMatrix(0,15);
+              CoverageTool2000.setCoverageMatrix(0,23);
               decodedChar = '`';
             } else if (next == 'X' || next == 'Y' || next == 'Z') {
-              CoverageTool2000.setCoverageMatrix(0,16);
+              CoverageTool2000.setCoverageMatrix(0,24);
               decodedChar = (char) 127;
             } else {
-              CoverageTool2000.setCoverageMatrix(0,17);
+              CoverageTool2000.setCoverageMatrix(0,25);
               throw FormatException.getFormatInstance();
             }
             break;
           case '/':
-            CoverageTool2000.setCoverageMatrix(0,18);
+            CoverageTool2000.setCoverageMatrix(0,26);
             // /A to /O map to ! to , and /Z maps to :
             if (next >= 'A' && next <= 'O') {
-              CoverageTool2000.setCoverageMatrix(0,19);
+              CoverageTool2000.setCoverageMatrix(0,27);
               decodedChar = (char) (next - 32);
             } else if (next == 'Z') {
-              CoverageTool2000.setCoverageMatrix(0,20);
+              CoverageTool2000.setCoverageMatrix(0,28);
               decodedChar = ':';
             } else {
-              CoverageTool2000.setCoverageMatrix(0,21);
+              CoverageTool2000.setCoverageMatrix(0,29);
               throw FormatException.getFormatInstance();
             }
             break;
@@ -344,7 +352,7 @@ public final class Code39Reader extends OneDReader {
         // bump up i again since we read two characters
         i++;
       } else {
-        CoverageTool2000.setCoverageMatrix(0,22);
+        CoverageTool2000.setCoverageMatrix(0,30);
         decoded.append(c);
       }
     }
