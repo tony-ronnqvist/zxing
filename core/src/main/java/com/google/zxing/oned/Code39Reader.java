@@ -20,6 +20,7 @@ import com.google.zxing.*;
 import com.google.zxing.common.BitArray;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -136,6 +137,22 @@ public final class Code39Reader extends OneDReader {
       throw NotFoundException.getNotFoundInstance();
     }
 
+    StringBuilder resultAfter = helpChecksum(result);
+
+    String resultString = helpDecode(resultAfter);
+
+    float left = (start[1] + start[0]) / 2.0f;
+    float right = lastStart + lastPatternSize / 2.0f;
+    return new Result(
+        resultString,
+        null,
+        new ResultPoint[]{
+            new ResultPoint(left, rowNumber),
+            new ResultPoint(right, rowNumber)},
+        BarcodeFormat.CODE_39);
+
+  }
+  private StringBuilder helpChecksum(StringBuilder result) throws ChecksumException {
     if (usingCheckDigit) {
       CoverageTool2000.setCoverageMatrix(8,3);
       int max = result.length() - 1;
@@ -150,32 +167,26 @@ public final class Code39Reader extends OneDReader {
       result.setLength(max);
       CoverageTool2000.setCoverageMatrix(8,5);
     }
+    return result;
+  }
 
-    if (result.length() == 0) {
+  private String helpDecode(StringBuilder resultAfter) throws FormatException, NotFoundException {
+    if (resultAfter.length() == 0) {
       // false positive
       throw NotFoundException.getNotFoundInstance();
     }
-
     String resultString;
     if (extendedMode) {
       CoverageTool2000.setCoverageMatrix(8,6);
-      resultString = decodeExtended(result);
+      resultString = decodeExtended(resultAfter);
     } else {
       CoverageTool2000.setCoverageMatrix(8,7);
-      resultString = result.toString();
+      resultString = resultAfter.toString();
     }
 
-    float left = (start[1] + start[0]) / 2.0f;
-    float right = lastStart + lastPatternSize / 2.0f;
-    return new Result(
-        resultString,
-        null,
-        new ResultPoint[]{
-            new ResultPoint(left, rowNumber),
-            new ResultPoint(right, rowNumber)},
-        BarcodeFormat.CODE_39);
-
+  return resultString;
   }
+
 
   private static int[] findAsteriskPattern(BitArray row, int[] counters) throws NotFoundException {
     int width = row.getSize();
