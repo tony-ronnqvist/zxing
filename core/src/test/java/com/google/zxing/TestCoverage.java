@@ -334,8 +334,7 @@ public class TestCoverage extends Assert {
     Map<DecodeHintType,String> hints = new HashMap<>();
     hints.put(DecodeHintType.CHARACTER_SET, "ENCODING");
     assertEquals(StringUtils.guessEncoding(null, hints), hints.get(DecodeHintType.CHARACTER_SET).toString());
-
-
+  }
   ​
   /**
     * Test method testGuessEncodingPartFour that for given input should guess encoding UTF-8
