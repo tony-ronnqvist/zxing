@@ -106,7 +106,34 @@ public class TestCoverage extends Assert {
   }
 
   /**
-    * Test method testGuessEncodingPartThree that for given input should guess encoding UTF-8
+  * Test method testGuessEncodingPartOne will test the part of guessEncoding were "hints" is defined and contains the key "CHARACTER_SET" 
+  */
+  @Test
+  public void testGuessEncodingPartOne() {
+    Map<DecodeHintType,?> hints = new Map<DecodeHintType, ?>();
+    hints.put(DecodeHintType.CHARACTER_SET);
+    assertEquals(StringUtils.guessEncoding(null, hints), hints.get(DecodeHintType.CHARACTER_SET).toString());
+  }
+
+  /**
+  * Test method testGuessEncodingPartTwo that for given input should guess SJIS encoding
+  */
+  @Test
+  public void testGuessEncodingPartTwo() {
+    assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0xd0, (byte) 0xd0, (byte) 0xd0}, null), "SJIS");
+  }
+
+  /**
+  * Test method testGuessEncodingPartThree that for given input should guess encoding ISO8859_1
+  */
+  @Test
+  public void testGuessEncodingPartThree() {
+    assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0xa0, (byte) 0xa0, (byte) 0xa0}, null), "ISO8859_1");
+  }
+
+
+  /**
+    * Test method testGuessEncodingPartFour that for given input should guess encoding UTF-8
     */
   @Test
   public void testGuessEncodingPartFour() {
