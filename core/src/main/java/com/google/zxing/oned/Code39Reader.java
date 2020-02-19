@@ -278,22 +278,28 @@ public final class Code39Reader extends OneDReader {
    * @param encoded - CharSequence to decode
    * @return - String with the decoded CharSequence
    * @throws FormatException
+   * Hand calculated CC: 31
    */
   private static String decodeExtended(CharSequence encoded) throws FormatException {
+    //Manual branch counting: start node +1
     int length = encoded.length();
     StringBuilder decoded = new StringBuilder(length);
     for (int i = 0; i < length; i++) {
+      //Manual branch counting: +1
       CoverageTool2000.setCoverageMatrix(0,8);
       char c = encoded.charAt(i);
       if (c == '+' || c == '$' || c == '%' || c == '/') {
+        //Manual branch counting: +4
         CoverageTool2000.setCoverageMatrix(0,9);
         char next = encoded.charAt(i + 1);
         char decodedChar = '\0';
         switch (c) {
           case '+':
+            //Manual branch counting: +1
             CoverageTool2000.setCoverageMatrix(0,10);
             // +A to +Z map to a to z
             if (next >= 'A' && next <= 'Z') {
+              //Manual branch counting: +2
               CoverageTool2000.setCoverageMatrix(0,11);
               decodedChar = (char) (next + 32);
             } else {
@@ -302,9 +308,11 @@ public final class Code39Reader extends OneDReader {
             }
             break;
           case '$':
+            //Manual branch counting: +1
             CoverageTool2000.setCoverageMatrix(0,13);
             // $A to $Z map to control codes SH to SB
             if (next >= 'A' && next <= 'Z') {
+              //Manual branch counting: +2
               CoverageTool2000.setCoverageMatrix(0,14);
               decodedChar = (char) (next - 64);
             } else {
@@ -313,30 +321,39 @@ public final class Code39Reader extends OneDReader {
             }
             break;
           case '%':
+            //Manual branch counting: +1
             CoverageTool2000.setCoverageMatrix(0,16);
             // %A to %E map to control codes ESC to US
             if (next >= 'A' && next <= 'E') {
+              //Manual branch counting: +1
               CoverageTool2000.setCoverageMatrix(0,17);
               decodedChar = (char) (next - 38);
             } else if (next >= 'F' && next <= 'J') {
+              //Manual branch counting: +2
               CoverageTool2000.setCoverageMatrix(0,18);
               decodedChar = (char) (next - 11);
             } else if (next >= 'K' && next <= 'O') {
+              //Manual branch counting: +2
               CoverageTool2000.setCoverageMatrix(0,19);
               decodedChar = (char) (next + 16);
             } else if (next >= 'P' && next <= 'T') {
+              //Manual branch counting: +2
               CoverageTool2000.setCoverageMatrix(0,20);
               decodedChar = (char) (next + 43);
             } else if (next == 'U') {
+              //Manual branch counting: +1
               CoverageTool2000.setCoverageMatrix(0,21);
               decodedChar = (char) 0;
             } else if (next == 'V') {
+              //Manual branch counting: +1
               CoverageTool2000.setCoverageMatrix(0,22);
               decodedChar = '@';
             } else if (next == 'W') {
+              //Manual branch counting: +1
               CoverageTool2000.setCoverageMatrix(0,23);
               decodedChar = '`';
             } else if (next == 'X' || next == 'Y' || next == 'Z') {
+              //Manual branch counting: +3
               CoverageTool2000.setCoverageMatrix(0,24);
               decodedChar = (char) 127;
             } else {
@@ -345,12 +362,15 @@ public final class Code39Reader extends OneDReader {
             }
             break;
           case '/':
+            //Manual branch counting: +1
             CoverageTool2000.setCoverageMatrix(0,26);
             // /A to /O map to ! to , and /Z maps to :
             if (next >= 'A' && next <= 'O') {
+              //Manual branch counting: +2
               CoverageTool2000.setCoverageMatrix(0,27);
               decodedChar = (char) (next - 32);
             } else if (next == 'Z') {
+              //Manual branch counting: +1
               CoverageTool2000.setCoverageMatrix(0,28);
               decodedChar = ':';
             } else {
