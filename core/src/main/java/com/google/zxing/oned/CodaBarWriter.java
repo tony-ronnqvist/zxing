@@ -44,7 +44,10 @@ public final class CodaBarWriter extends OneDimensionalCodeWriter {
   public boolean[] encode(String contents) {
 
 
+    // +1 for start node
+
     if (contents.length() < 2) {
+      //Manual branch counting: +1
       CoverageTool2000.setCoverageMatrix(3, 0);
       // Can't have a start/end guard, so tentatively add default guards
       contents = DEFAULT_GUARD + contents + DEFAULT_GUARD;
@@ -58,16 +61,20 @@ public final class CodaBarWriter extends OneDimensionalCodeWriter {
       boolean startsAlt = CodaBarReader.arrayContains(ALT_START_END_CHARS, firstChar);
       boolean endsAlt = CodaBarReader.arrayContains(ALT_START_END_CHARS, lastChar);
       if (startsNormal) {
+        //Manual branch counting: +1
         CoverageTool2000.setCoverageMatrix(3, 2);
         if (!endsNormal) {
+          //Manual branch counting: +1
           CoverageTool2000.setCoverageMatrix(3, 3);
           throw new IllegalArgumentException("Invalid start/end guards: " + contents);
         }
         CoverageTool2000.setCoverageMatrix(3, 4);
         // else already has valid start/end
       } else if (startsAlt) {
+        //Manual branch counting: +1
         CoverageTool2000.setCoverageMatrix(3, 5);
         if (!endsAlt) {
+          //Manual branch counting: +1
           CoverageTool2000.setCoverageMatrix(3, 6);
           throw new IllegalArgumentException("Invalid start/end guards: " + contents);
         }
@@ -77,6 +84,7 @@ public final class CodaBarWriter extends OneDimensionalCodeWriter {
         CoverageTool2000.setCoverageMatrix(3, 8);
         // Doesn't start with a guard
         if (endsNormal || endsAlt) {
+          //Manual branch counting: +2
           CoverageTool2000.setCoverageMatrix(3, 9);
           throw new IllegalArgumentException("Invalid start/end guards: " + contents);
         }
@@ -90,11 +98,13 @@ public final class CodaBarWriter extends OneDimensionalCodeWriter {
     // The start character and the end character are decoded to 10 length each.
     int resultLength = 20;
     for (int i = 1; i < contents.length() - 1; i++) {
-
+      //Manual branch counting: +1
       if (Character.isDigit(contents.charAt(i)) || contents.charAt(i) == '-' || contents.charAt(i) == '$') {
+        //Manual branch counting: +3
         CoverageTool2000.setCoverageMatrix(3, 11);
         resultLength += 9;
       } else if (CodaBarReader.arrayContains(CHARS_WHICH_ARE_TEN_LENGTH_EACH_AFTER_DECODED, contents.charAt(i))) {
+        //Manual branch counting: +1
         CoverageTool2000.setCoverageMatrix(3, 12);
         resultLength += 10;
       } else {
@@ -108,24 +118,30 @@ public final class CodaBarWriter extends OneDimensionalCodeWriter {
     boolean[] result = new boolean[resultLength];
     int position = 0;
     for (int index = 0; index < contents.length(); index++) {
+      //Manual branch counting: +1
       char c = Character.toUpperCase(contents.charAt(index));
       if (index == 0 || index == contents.length() - 1) {
+        //Manual branch counting: +2
         CoverageTool2000.setCoverageMatrix(3, 14);
         // The start/end chars are not in the CodaBarReader.ALPHABET.
         switch (c) {
           case 'T':
+            //Manual branch counting: +1
             CoverageTool2000.setCoverageMatrix(3, 15);
             c = 'A';
             break;
           case 'N':
+            //Manual branch counting: +1
             CoverageTool2000.setCoverageMatrix(3, 16);
             c = 'B';
             break;
           case '*':
+            //Manual branch counting: +1
             CoverageTool2000.setCoverageMatrix(3, 17);
             c = 'C';
             break;
           case 'E':
+            //Manual branch counting: +1
             CoverageTool2000.setCoverageMatrix(3, 18);
             c = 'D';
             break;
@@ -134,8 +150,10 @@ public final class CodaBarWriter extends OneDimensionalCodeWriter {
       CoverageTool2000.setCoverageMatrix(3, 19);
       int code = 0;
       for (int i = 0; i < CodaBarReader.ALPHABET.length; i++) {
+        //Manual branch counting: +1
         // Found any, because I checked above.
         if (c == CodaBarReader.ALPHABET[i]) {
+          //Manual branch counting: +1
           CoverageTool2000.setCoverageMatrix(3, 20);
           code = CodaBarReader.CHARACTER_ENCODINGS[i];
           break;
@@ -146,9 +164,11 @@ public final class CodaBarWriter extends OneDimensionalCodeWriter {
       int counter = 0;
       int bit = 0;
       while (bit < 7) { // A character consists of 7 digit.
+        //Manual branch counting: +1
         result[position] = color;
         position++;
         if (((code >> (6 - bit)) & 1) == 0 || counter == 1) {
+          //Manual branch counting: +2
           CoverageTool2000.setCoverageMatrix(3, 22);
           color = !color; // Flip the color.
           bit++;
@@ -159,12 +179,15 @@ public final class CodaBarWriter extends OneDimensionalCodeWriter {
         }
       }
       if (index < contents.length() - 1) {
+        //Manual branch counting: +1
         CoverageTool2000.setCoverageMatrix(3, 24);
         result[position] = false;
         position++;
       }
       CoverageTool2000.setCoverageMatrix(3, 25);
     }
+
+    //Manual branch counting end result: 26
     return result;
   }
 }
