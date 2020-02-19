@@ -335,6 +335,15 @@ public class TestCoverage extends Assert {
     hints.put(DecodeHintType.CHARACTER_SET, "ENCODING");
     assertEquals(StringUtils.guessEncoding(null, hints), hints.get(DecodeHintType.CHARACTER_SET).toString());
   }
+
+  /**
+  * Test method testGuessEncodingPartTwo that for given input should guess SJIS encoding
+  */
+  @Test
+  public void testGuessEncodingPartTwo() {
+    assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0xd0, (byte) 0xd0, (byte) 0xd0}, null), "SJIS");
+  }
+
   ​
   /**
     * Test method testGuessEncodingPartFour that for given input should guess encoding UTF-8
