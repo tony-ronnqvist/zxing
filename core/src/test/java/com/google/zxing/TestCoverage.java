@@ -3,10 +3,11 @@ import com.google.zxing.common.BitArray;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.oned.CodaBarWriter;
 import com.google.zxing.oned.Code39Reader;
+import com.google.zxing.oned.Code39Writer;
+import com.google.zxing.oned.rss.RSS14Reader;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 // guessEncoding
@@ -105,11 +106,11 @@ public class TestCoverage extends Assert {
   }
 
   /**
-    * Test method testGuessEncodingPartThree that for given input should guess encoding ISO8859_1
+    * Test method testGuessEncodingPartFour that for given input should guess encoding UTF-8
     */
   @Test
-  public void testGuessEncodingPartThree() {
-    assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0xa0, (byte) 0xa0, (byte) 0xa0}, null), "ISO8859_1");
+  public void testGuessEncodingPartFour() {
+    assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0x80, (byte) 0x80, (byte) 0x80}, null), "UTF-8");
   }
 
   /*
@@ -120,7 +121,7 @@ public class TestCoverage extends Assert {
    * @throws NotFoundException
    */
   @Test
-  public void testCode39CheckDigitFalse(){
+  public void testCode39CheckDigitFalse() throws FormatException, ChecksumException, NotFoundException {
 
     //"A*" encoded to binary
     String encoded = "100101101101011010100101101011010010110100101101101";
@@ -147,6 +148,22 @@ public class TestCoverage extends Assert {
 
 
   /**
+   * Helper for the testCode39CheckDigitFalse. Creates an instance to be checked.
+   *
+   * @param encodedResult string - with the barcode characters encoded in binary
+   */
+  private static void doTestCheckDigitThrows(String encodedResult){
+
+    Code39Reader sut = new Code39Reader(true, true);
+    BitMatrix matrix = BitMatrix.parse(encodedResult, "1", "0");
+    BitArray row = new BitArray(matrix.getWidth());
+    matrix.getRow(0, row);
+    assertThrows(ChecksumException.class, () ->{
+      sut.decodeRow(0, row, null);
+    });
+  }
+
+  /**
    * Helper for the testCode39CheckDigitTrue. Creates an instance to be checked.
    *
    * @param expectedResult string - expected result after the binary has been decoded
@@ -165,24 +182,7 @@ public class TestCoverage extends Assert {
     Result result = sut.decodeRow(0, row, null);
     assertEquals(expectedResult, result.getText());
   }
-
-
-  /**
-   * Helper for the testCode39CheckDigitFalse. Creates an instance to be checked.
-   *
-   * @param encodedResult string - with the barcode characters encoded in binary
-   */
-  private static void doTestCheckDigitThrows(String encodedResult){
-
-    Code39Reader sut = new Code39Reader(true, true);
-    BitMatrix matrix = BitMatrix.parse(encodedResult, "1", "0");
-    BitArray row = new BitArray(matrix.getWidth());
-    matrix.getRow(0, row);
-    assertThrows(ChecksumException.class, () ->{
-      sut.decodeRow(0, row, null);
-    });
-  }
-
+  
   /**
    * Test method for decodeExtended to test the branch where a + is followed
    * by a + (NOT next >= 'A' && next <= 'Z')
@@ -200,7 +200,7 @@ public class TestCoverage extends Assert {
       sut.decodeRow(0, row, null);
     });
   }
-
+  
   /**
    * Test method for decodeExtended to test the branch where a $ is followed
    * by a $ (NOT next >= 'A' && next <= 'Z')
