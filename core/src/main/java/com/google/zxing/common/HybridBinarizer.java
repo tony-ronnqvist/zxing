@@ -165,20 +165,25 @@ public final class HybridBinarizer extends GlobalHistogramBinarizer {
                                               int subHeight,
                                               int width,
                                               int height) {
+    //Manual count +1, Total = 1
     int maxYOffset = height - BLOCK_SIZE;
     int maxXOffset = width - BLOCK_SIZE;
     int[][] blackPoints = new int[subHeight][subWidth];
     for (int y = 0; y < subHeight; y++) {
+      //Manual count +1, Total = 2
       int yoffset = y << BLOCK_SIZE_POWER;
       if (yoffset > maxYOffset) {
+        //Manual count +1, Total = 3
         CoverageTool2000.setCoverageMatrix(4, 0);
         yoffset = maxYOffset;
       } else {
         CoverageTool2000.setCoverageMatrix(4, 1);
       }
       for (int x = 0; x < subWidth; x++) {
+        //Manual count +1, Total = 4
         int xoffset = x << BLOCK_SIZE_POWER;
         if (xoffset > maxXOffset) {
+          //Manual count +1, Total = 5
           xoffset = maxXOffset;
         } else {
           CoverageTool2000.setCoverageMatrix(4, 2);
@@ -187,17 +192,21 @@ public final class HybridBinarizer extends GlobalHistogramBinarizer {
         int min = 0xFF;
         int max = 0;
         for (int yy = 0, offset = yoffset * width + xoffset; yy < BLOCK_SIZE; yy++, offset += width) {
+          //Manual count +1, Total = 6
           for (int xx = 0; xx < BLOCK_SIZE; xx++) {
+            //Manual count +1, Total = 7
             int pixel = luminances[offset + xx] & 0xFF;
             sum += pixel;
             // still looking for good contrast
             if (pixel < min) {
+              //Manual count +1, Total = 8
               min = pixel;
               CoverageTool2000.setCoverageMatrix(4, 3);
             } else {
               CoverageTool2000.setCoverageMatrix(4, 4);
             }
             if (pixel > max) {
+              //Manual count +1, Total = 9
               max = pixel;
             } else {
               CoverageTool2000.setCoverageMatrix(4, 5);
@@ -205,9 +214,12 @@ public final class HybridBinarizer extends GlobalHistogramBinarizer {
           }
           // short-circuit min/max tests once dynamic range is met
           if (max - min > MIN_DYNAMIC_RANGE) {
+            //Manual count +1, Total = 10
             // finish the rest of the rows quickly
             for (yy++, offset += width; yy < BLOCK_SIZE; yy++, offset += width) {
+              //Manual count +1, Total = 11
               for (int xx = 0; xx < BLOCK_SIZE; xx++) {
+                //Manual count +1, Total = 12
                 sum += luminances[offset + xx] & 0xFF;
               }
             }
@@ -219,6 +231,7 @@ public final class HybridBinarizer extends GlobalHistogramBinarizer {
         // The default estimate is the average of the values in the block.
         int average = sum >> (BLOCK_SIZE_POWER * 2);
         if (max - min <= MIN_DYNAMIC_RANGE) {
+          //Manual count +1, Total = 13
           // If variation within the block is low, assume this is a block with only light or only
           // dark pixels. In that case we do not want to use the average, as it would divide this
           // low contrast area into black and white pixels, essentially creating data out of noise.
@@ -228,6 +241,7 @@ public final class HybridBinarizer extends GlobalHistogramBinarizer {
           average = min / 2;
 
           if (y > 0 && x > 0) {
+            //Manual count +2, Total = 15
             // Correct the "white background" assumption for blocks that have neighbors by comparing
             // the pixels in this block to the previously calculated black points. This is based on
             // the fact that dark barcode symbology is always surrounded by some amount of light
@@ -238,6 +252,7 @@ public final class HybridBinarizer extends GlobalHistogramBinarizer {
             int averageNeighborBlackPoint =
                 (blackPoints[y - 1][x] + (2 * blackPoints[y][x - 1]) + blackPoints[y - 1][x - 1]) / 4;
             if (min < averageNeighborBlackPoint) {
+              //Manual count +1, Total = 16
               average = averageNeighborBlackPoint;
             } else {
               CoverageTool2000.setCoverageMatrix(4, 7);
