@@ -1,11 +1,19 @@
 package com.google.zxing;
-import com.google.zxing.common.BitArray;
+
+
+import com.google.zxing.aztec.AztecDetectorResult;
+import com.google.zxing.aztec.AztecWriter;
+import com.google.zxing.aztec.decoder.Decoder;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.common.DecoderResult;
+import com.google.zxing.common.BitArray;
 import com.google.zxing.oned.CodaBarWriter;
 import com.google.zxing.oned.Code39Reader;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -306,7 +314,6 @@ public class TestCoverage extends Assert {
   public void testEncodedModuloException(){
     String resultString = "//";
     String code39 = "1000101110111010100010001010001010001000101000101000101110111010";
-
     Code39Reader sut = new Code39Reader(false, true);
     BitMatrix matrix = BitMatrix.parse(code39, "1", "0");
     BitArray row = new BitArray(matrix.getWidth());
@@ -324,6 +331,95 @@ public class TestCoverage extends Assert {
   public void testModFormatException(){
     String encoded = "10001011101110101010001000100010101000100010001010001010001000101000101110111010";
     doTestModFormatException(encoded);
+  }
+  
+   /**
+   *Test method for nbDatablocks=nbLayers=1
+   */
+   @Test
+  public void testCorrectBits1() throws FormatException {
+
+    BitMatrix bits=new BitMatrix(16);
+    boolean [][]image=new boolean[16][16];
+    for (int i=0;i<16;i++){
+      for (int j=0;j<16;j++){
+        image[i][j]=true;
+      }
+    }
+    bits.parse(image);
+    ResultPoint[] points = new ResultPoint[0];
+    AztecDetectorResult t1= new AztecDetectorResult(bits,points, true,1,1);
+    Decoder r1=new Decoder();
+    try{
+      r1.decode(t1);
+    }catch (Exception e) {
+    }
+  }
+  
+    /**
+   *Test method for array length 1
+   */
+  @Test
+  public void testCorrectBits2() throws FormatException {
+    BitMatrix bits=new BitMatrix(16);
+    boolean [][]image=new boolean[1][1];
+    for (int i=0;i<1;i++){
+      for (int j=0;j<1;j++){
+        image[i][j]=false;
+      }
+    }
+    bits.parse(image);
+    ResultPoint[] points = new ResultPoint[0];
+    AztecDetectorResult t1= new AztecDetectorResult(bits,points, true,1,1);
+    Decoder r1=new Decoder();
+    try{
+      r1.decode(t1);
+    }catch (Exception e) {
+    }
+  }
+  
+   /**
+   *Test method for nbDatablocks=25
+   */
+  @Test
+  public void testCorrectBits3() throws FormatException {
+    BitMatrix bits=new BitMatrix(25);
+    boolean [][]image=new boolean[25][25];
+    for (int i=0;i<25;i++){
+      for (int j=0;j<25;j++){
+        image[i][j]=false;
+      }
+    }
+    bits.parse(image);
+    ResultPoint[] points = new ResultPoint[0];
+    AztecDetectorResult t1= new AztecDetectorResult(bits,points, true,625,1);
+    Decoder r1=new Decoder();
+    try{
+      r1.decode(t1);
+    }catch (Exception e) {
+    }
+  }
+
+    /**
+   *Test method for numCodewords < numDataCodewords
+   */
+  @Test
+  public void testCorrectBits4() throws FormatException {
+    BitMatrix bits=new BitMatrix(16);
+    boolean [][]image=new boolean[16][16];
+    for (int i=0;i<16;i++){
+      for (int j=0;j<16;j++){
+        image[i][j]=false;
+      }
+    }
+    bits.parse(image);
+    ResultPoint[] points = new ResultPoint[0];
+    AztecDetectorResult t1= new AztecDetectorResult(bits,points, true,256,1);
+    Decoder r1=new Decoder();
+    try{
+      r1.decode(t1);
+    }catch (Exception e) {
+    }
   }
 
   /**
@@ -360,3 +456,5 @@ public class TestCoverage extends Assert {
     assertEquals(StringUtils.guessEncoding(new byte[]{(byte) 0x80, (byte) 0x80, (byte) 0x80}, null), "UTF-8");
   }
 }
+
+
