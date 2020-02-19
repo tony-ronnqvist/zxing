@@ -326,6 +326,16 @@ public class TestCoverage extends Assert {
     doTestModFormatException(encoded);
   }
 
+  /**
+  * Test method testGuessEncodingPartOne will test the part of guessEncoding were "hints" is defined and contains the key "CHARACTER_SET" 
+  */
+  @Test
+  public void testGuessEncodingPartOne() {
+    Map<DecodeHintType,String> hints = new HashMap<>();
+    hints.put(DecodeHintType.CHARACTER_SET, "ENCODING");
+    assertEquals(StringUtils.guessEncoding(null, hints), hints.get(DecodeHintType.CHARACTER_SET).toString());
+
+
   ​
   /**
     * Test method testGuessEncodingPartFour that for given input should guess encoding UTF-8
