@@ -39,7 +39,7 @@ public class TestSuite extends TestCase {
     CoverageTool2000.initCoverageMatrix(3, 26);
     CoverageTool2000.initCoverageMatrix(4, 10);
     CoverageTool2000.initCoverageMatrix(5, 51);
-    CoverageTool2000.initCoverageMatrix(6, 30);
+    CoverageTool2000.initCoverageMatrix(6, 15);
     CoverageTool2000.initCoverageMatrix(7, 26);
     CoverageTool2000.initCoverageMatrix(8, 37);
     CoverageTool2000.initCoverageMatrix(9, 11);
