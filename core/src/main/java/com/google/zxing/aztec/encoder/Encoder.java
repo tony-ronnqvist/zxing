@@ -21,6 +21,9 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.reedsolomon.GenericGF;
 import com.google.zxing.common.reedsolomon.ReedSolomonEncoder;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Generates Aztec 2D barcodes.
  *
@@ -61,9 +64,65 @@ public final class Encoder {
    * @return Aztec symbol matrix with metadata
    */
   public static AztecCode encode(byte[] data, int minECCPercent, int userSpecifiedLayers) {
+
+    List<Object> returnValuesStuffing = stuffing(data, minECCPercent, userSpecifiedLayers);
+
+    boolean compact = (boolean) returnValuesStuffing.get(3);
+    int layers = (int) returnValuesStuffing.get(4);;
+    int totalBitsInLayer = (int) returnValuesStuffing.get(1);;
+    int wordSize = (int) returnValuesStuffing.get(2);;
+    BitArray stuffedBits = (BitArray) returnValuesStuffing.get(0);;
+
+    BitArray messageBits = generateCheckWords(stuffedBits, totalBitsInLayer, wordSize);
+
+    // generate mode message
+    int messageSizeInWords = stuffedBits.getSize() / wordSize;
+    BitArray modeMessage = generateModeMessage(compact, layers, messageSizeInWords);
+
+
+    List<Object> returnValuesallSymbol = allSymbol(compact,layers);
+
+    int[] alignmentMap = (int[]) returnValuesallSymbol.get(1);
+    int matrixSize = (int) returnValuesallSymbol.get(0);
+    int baseMatrixSize = (int) returnValuesallSymbol.get(2);
+
+    BitMatrix matrix = new BitMatrix(matrixSize);
+
+
+    matrix = drawBits(compact, layers, messageBits, matrix, alignmentMap, baseMatrixSize);
+
+
+    // draw mode message
+    drawModeMessage(matrix, compact, matrixSize, modeMessage);
+
+    // draw alignment marks
+    if (compact) {
+      drawBullsEye(matrix, matrixSize / 2, 5);
+    } else {
+      drawBullsEye(matrix, matrixSize / 2, 7);
+      for (int i = 0, j = 0; i < baseMatrixSize / 2 - 1; i += 15, j += 16) {
+        for (int k = (matrixSize / 2) & 1; k < matrixSize; k += 2) {
+          matrix.set(matrixSize / 2 - j, k);
+          matrix.set(matrixSize / 2 + j, k);
+          matrix.set(k, matrixSize / 2 - j);
+          matrix.set(k, matrixSize / 2 + j);
+        }
+      }
+    }
+
+    AztecCode aztec = new AztecCode();
+    aztec.setCompact(compact);
+    aztec.setSize(matrixSize);
+    aztec.setLayers(layers);
+    aztec.setCodeWords(messageSizeInWords);
+    aztec.setMatrix(matrix);
+    return aztec;
+  }
+
+  private static List<Object> stuffing(byte[] data, int minECCPercent, int userSpecifiedLayers){
+
     // High-level encode
     BitArray bits = new HighLevelEncoder(data).encode();
-
     // stuff bits and choose symbol size
     int eccBits = bits.getSize() * minECCPercent / 100 + 11;
     int totalSizeBits = bits.getSize() + eccBits;
@@ -77,7 +136,7 @@ public final class Encoder {
       layers = Math.abs(userSpecifiedLayers);
       if (layers > (compact ? MAX_NB_BITS_COMPACT : MAX_NB_BITS)) {
         throw new IllegalArgumentException(
-            String.format("Illegal value %s for layers", userSpecifiedLayers));
+          String.format("Illegal value %s for layers", userSpecifiedLayers));
       }
       totalBitsInLayer = totalBitsInLayer(layers, compact);
       wordSize = WORD_SIZE[layers];
@@ -122,12 +181,10 @@ public final class Encoder {
         }
       }
     }
-    BitArray messageBits = generateCheckWords(stuffedBits, totalBitsInLayer, wordSize);
+    return Arrays.asList(stuffedBits, totalBitsInLayer, wordSize, compact, layers);
+  }
 
-    // generate mode message
-    int messageSizeInWords = stuffedBits.getSize() / wordSize;
-    BitArray modeMessage = generateModeMessage(compact, layers, messageSizeInWords);
-
+  private static List<Object> allSymbol(boolean compact, int layers){
     // allocate symbol
     int baseMatrixSize = (compact ? 11 : 14) + layers * 4; // not including alignment lines
     int[] alignmentMap = new int[baseMatrixSize];
@@ -148,7 +205,13 @@ public final class Encoder {
         alignmentMap[origCenter + i] = center + newOffset + 1;
       }
     }
-    BitMatrix matrix = new BitMatrix(matrixSize);
+
+    return Arrays.asList(matrixSize, alignmentMap, baseMatrixSize);
+
+  }
+
+
+  private static BitMatrix drawBits(boolean compact, int layers, BitArray messageBits, BitMatrix matrix, int[] alignmentMap, int baseMatrixSize){
 
     // draw data bits
     for (int i = 0, rowOffset = 0; i < layers; i++) {
@@ -173,32 +236,10 @@ public final class Encoder {
       rowOffset += rowSize * 8;
     }
 
-    // draw mode message
-    drawModeMessage(matrix, compact, matrixSize, modeMessage);
+    return matrix;
 
-    // draw alignment marks
-    if (compact) {
-      drawBullsEye(matrix, matrixSize / 2, 5);
-    } else {
-      drawBullsEye(matrix, matrixSize / 2, 7);
-      for (int i = 0, j = 0; i < baseMatrixSize / 2 - 1; i += 15, j += 16) {
-        for (int k = (matrixSize / 2) & 1; k < matrixSize; k += 2) {
-          matrix.set(matrixSize / 2 - j, k);
-          matrix.set(matrixSize / 2 + j, k);
-          matrix.set(k, matrixSize / 2 - j);
-          matrix.set(k, matrixSize / 2 + j);
-        }
-      }
-    }
-
-    AztecCode aztec = new AztecCode();
-    aztec.setCompact(compact);
-    aztec.setSize(matrixSize);
-    aztec.setLayers(layers);
-    aztec.setCodeWords(messageSizeInWords);
-    aztec.setMatrix(matrix);
-    return aztec;
   }
+
 
   private static void drawBullsEye(BitMatrix matrix, int center, int size) {
     for (int i = 0; i < size; i += 2) {
